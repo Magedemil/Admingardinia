@@ -684,7 +684,7 @@ function computeData(){
       note: (note && !note.note.includes('تم الافتقاد')) ? note.note : null,
       warn,
     };
-  }).filter(s => s.consec >= 2 && s.total >= 2);  // needs follow-up
+  });  // كل المخدومين يظهروا (مش بس الغايبين) — الترتيب في renderFu
 }
 
 const SERVANT_CLASS = {grade:'الأول الثانوي', gender:'بنت'}; // يتحدّث بعد الدخول
@@ -1593,7 +1593,8 @@ function renderSvBdays(){
 function renderSvSummary(){
   const sg = gradeMatch2(SERVANT_CLASS.grade);
   const myStudents = STUDENTS.filter(s => s.grade===sg && s.gender===SERVANT_CLASS.gender);
-  const myFollow   = DEMO.filter(s => s.grade===sg && s.gender===SERVANT_CLASS.gender);
+  const myClass    = DEMO.filter(s => s.grade===sg && s.gender===SERVANT_CLASS.gender);
+  const myFollow   = myClass.filter(s => s.consec>=2);
   const avgPct     = myStudents.length ? Math.round(myStudents.reduce((a,s)=>a+(s.pct||0),0)/myStudents.length) : 0;
   const followed   = myFollow.filter(s=>s.followed).length;
   const pctColor   = avgPct>=80?'var(--green)':avgPct>=60?'var(--accent)':'var(--red)';
@@ -1676,7 +1677,7 @@ function renderSvSummary(){
 function renderAminDashboard(){
   const total = RAW_STUDENTS.length;
   const avgPct = STUDENTS.length ? Math.round(STUDENTS.reduce((a,s)=>a+s.pct,0)/STUDENTS.length) : 0;
-  const needFollow = DEMO.length;
+  const needFollow = DEMO.filter(s=>s.consec>=2).length;
   // followed this week = followup_notes with "تم الافتقاد" in last 7 days
   const weekAgo = new Date(); weekAgo.setDate(weekAgo.getDate()-7);
   const followedWeek = RAW_FOLLOWNOTES.filter(n =>
@@ -1713,7 +1714,7 @@ function renderAminDashboard(){
   function classStats(cl){
     const studs = RAW_STUDENTS.filter(s => gradeMatch2(s.grade)===cl.grade && genderMatch(s.gender)===cl.gender);
     const ids = studs.map(s=>s.id);
-    const need = DEMO.filter(s => s.grade===cl.grade && s.gender===cl.gender).length;
+    const need = DEMO.filter(s => s.grade===cl.grade && s.gender===cl.gender && s.consec>=2).length;
     const followed = RAW_FOLLOWNOTES.filter(n => ids.includes(n.student_id) && n.note && n.note.includes('تم الافتقاد') && new Date(n.created_at)>=weekAgo2).length;
     // رجعوا: عندهم note "تم الافتقاد" وبعدها حضروا
     let back = 0;
