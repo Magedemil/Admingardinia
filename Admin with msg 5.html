@@ -1,0 +1,1962 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="theme-color" content="#0f1117"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover"/>
+<link rel="manifest" href="manifest-eftqad.json"/>
+<meta name="theme-color" content="#f5a623"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black"/>
+<meta name="apple-mobile-web-app-title" content="افتقادي"/>
+<link rel="apple-touch-icon" href="apple-touch-icon.png"/>
+<title>افتقادي 🤝 — نموذج تجريبي</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Tajawal:wght@700;800;900&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#0f1117;--surface:#181c27;--card:#1e2335;--border:#2a3050;--accent:#f5a623;--accent2:#e8583a;--green:#34c97b;--red:#e84545;--blue:#7eb8f7;--purple:#b87ef7;--muted:#6b7499;--text:#e8ecf4}
+*{box-sizing:border-box;margin:0;padding:0}
+html{background:var(--bg)}
+body{background:var(--bg);color:var(--text);font-family:'Cairo',sans-serif;direction:rtl;min-height:100vh;padding-bottom:50px}
+
+/* DEMO VIEW SWITCHER */
+.demo-bar{background:#0d1020;border-bottom:1px solid rgba(245,166,35,.25);padding:8px 14px;display:flex;align-items:center;justify-content:center;gap:8px}
+.demo-bar span{font-size:.65rem;color:var(--accent);font-weight:700}
+.v-btn{background:transparent;border:1px solid rgba(245,166,35,.35);color:var(--accent);font-family:'Cairo',sans-serif;font-size:.68rem;font-weight:700;padding:5px 13px;border-radius:20px;cursor:pointer}
+.v-btn.on{background:var(--accent);color:#1a1408}
+
+header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;padding-top:max(16px,env(safe-area-inset-top));border-bottom:1px solid var(--border)}
+.logo{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,var(--purple),var(--blue));display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 4px 16px rgba(184,126,247,.3)}
+.h-title{font-family:'Tajawal',sans-serif;font-weight:800;font-size:1.2rem}
+.h-sub{font-size:.7rem;color:var(--muted)}
+.refresh-btn{background:var(--surface);border:1px solid var(--border);color:var(--muted);font-family:'Cairo',sans-serif;font-size:.78rem;padding:7px 14px;border-radius:10px;cursor:pointer}
+.class-lbl{font-size:.62rem;color:var(--accent);background:rgba(245,166,35,.08);border:1px solid rgba(245,166,35,.25);padding:3px 10px;border-radius:20px;font-weight:700;white-space:nowrap}
+
+.nav-tabs{display:flex;overflow-x:auto;scrollbar-width:none;border-bottom:1px solid var(--border);padding:0 14px}
+.nav-tabs::-webkit-scrollbar{display:none}
+.nav-tab{background:transparent;border:none;border-bottom:2px solid transparent;color:var(--muted);font-family:'Cairo',sans-serif;font-size:.82rem;font-weight:700;padding:13px 13px;cursor:pointer;white-space:nowrap}
+.nav-tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+
+.section{display:none;padding:18px 16px}
+.section.active{display:block}
+
+select{background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:'Cairo',sans-serif;font-size:.8rem;padding:9px 12px;border-radius:10px}
+
+.info-box{font-size:.68rem;color:var(--muted);margin-bottom:12px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:9px 13px;line-height:1.7}
+
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:13px;text-align:center}
+.stat-num{font-family:'Tajawal',sans-serif;font-weight:900;font-size:1.5rem}
+.stat-lbl{font-size:.62rem;color:var(--muted);margin-top:2px}
+
+.sec-title{font-weight:800;font-size:.88rem;margin-bottom:10px}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:13px;margin-bottom:14px}
+
+.wk-row{display:flex;justify-content:space-between;padding:7px 0;font-size:.78rem;border-bottom:1px dashed rgba(255,255,255,.07)}
+.wk-row:last-child{border:none}
+
+/* bar charts */
+.bar-row{margin-bottom:10px}
+.bar-top{display:flex;justify-content:space-between;font-size:.72rem;margin-bottom:4px}
+.bar-track{height:8px;background:rgba(255,255,255,.06);border-radius:99px;overflow:hidden}
+.bar-fill{height:100%;border-radius:99px}
+
+.bday-card{background:linear-gradient(135deg,rgba(245,166,35,.1),rgba(232,88,58,.08));border:1px solid rgba(245,166,35,.3);border-radius:14px;padding:12px 14px;margin-bottom:10px;display:flex;align-items:center;gap:11px}
+
+.act-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;background:rgba(52,201,123,.12);border:1px solid rgba(52,201,123,.3);color:var(--green);font-family:'Cairo',sans-serif;font-size:.74rem;font-weight:700;padding:9px;border-radius:10px;text-decoration:none;cursor:pointer}
+
+/* ═══ CELEBRATION PANEL (Confetti Rain + Trophy Pulse) ═══ */
+@keyframes popIn{0%{transform:scale(.7);opacity:0}70%{transform:scale(1.06)}100%{transform:scale(1);opacity:1}}
+@keyframes shimmer{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+.celebrate-card{
+  border-radius:18px;padding:20px 16px;margin-bottom:12px;text-align:center;
+  background:linear-gradient(135deg,rgba(52,201,123,.16),rgba(184,126,247,.1),rgba(245,166,35,.1));
+  background-size:200% 200%;
+  animation:shimmer 5s ease infinite, popIn .5s ease;
+  border:1px solid rgba(52,201,123,.35);
+  position:relative;overflow:hidden
+}
+.confetti-piece{position:absolute;top:-12px;width:8px;height:8px;border-radius:2px;animation:cfall linear infinite;z-index:1}
+@keyframes cfall{
+  0%{transform:translateY(-12px) rotate(0deg);opacity:1}
+  100%{transform:translateY(260px) rotate(420deg);opacity:0}
+}
+.trophy-big{font-size:3rem;display:inline-block;position:relative;z-index:2;
+  animation:trophyBounce 1.8s ease-in-out infinite;
+  filter:drop-shadow(0 0 14px rgba(245,166,35,.5))}
+@keyframes trophyBounce{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-8px) scale(1.08)}}
+.glow-ring{position:absolute;top:16px;left:50%;transform:translateX(-50%);width:84px;height:84px;border-radius:50%;
+  background:radial-gradient(circle,rgba(245,166,35,.3),transparent 70%);animation:glowPulse 1.8s ease-in-out infinite;z-index:1}
+@keyframes glowPulse{0%,100%{opacity:.4;transform:translateX(-50%) scale(1)}50%{opacity:.85;transform:translateX(-50%) scale(1.3)}}
+.back-chip{background:rgba(52,201,123,.15);border:1px solid rgba(52,201,123,.4);color:var(--green);font-size:.72rem;font-weight:700;padding:4px 11px;border-radius:20px;display:inline-flex;align-items:center;gap:5px;unicode-bidi:plaintext;opacity:0;animation:chipIn .5s ease forwards}
+@keyframes chipIn{0%{opacity:0;transform:translateY(10px) scale(.8)}100%{opacity:1;transform:translateY(0) scale(1)}}
+
+.fu-toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:999;padding:11px 22px;border-radius:12px;font-size:.82rem;font-weight:700;box-shadow:0 6px 24px rgba(0,0,0,.4);transition:opacity .3s;opacity:0;background:rgba(52,201,123,.95);color:#fff;pointer-events:none;max-width:90%}
+
+table{width:100%;border-collapse:collapse;font-size:.72rem}
+th{color:var(--muted);font-weight:700;text-align:right;padding:8px 6px;border-bottom:1px solid var(--border)}
+td{padding:9px 6px;border-bottom:1px solid rgba(255,255,255,.05)}
+td,th{unicode-bidi:plaintext}
+/* ── DARK INPUTS & SELECTS ── */
+input,textarea{background:var(--bg)!important;color:var(--text)!important;border:1px solid var(--border);border-radius:10px;font-family:'Cairo',sans-serif;font-size:16px}
+input::placeholder,textarea::placeholder{color:var(--muted)}
+select{-webkit-appearance:none;appearance:none;background:var(--surface)!important;color:var(--text)!important}
+select option{background:var(--card);color:var(--text)}
+/* prevent white overscroll bounce on iOS */
+html,body{overscroll-behavior:none;background-color:#0f1117!important}
+/* date input dark */
+input[type="date"]{color-scheme:dark}
+</style>
+</head>
+<body>
+
+<!-- ══ LOGIN SCREEN ══ -->
+<div id="loginScreen" style="position:fixed;inset:0;background:var(--bg);z-index:500;display:flex;flex-direction:column">
+
+  <!-- App branding -->
+  <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px">
+    <div style="font-size:3.5rem;margin-bottom:12px">🤝</div>
+    <div style="font-family:'Tajawal',sans-serif;font-weight:900;font-size:1.5rem;color:var(--text)">افتقادي</div>
+    <div style="font-size:.75rem;color:var(--muted);margin-top:4px">أسرة ثانوي - جاردنيا</div>
+  </div>
+
+  <!-- Bottom sheet -->
+  <div style="background:var(--card);border-radius:24px 24px 0 0;padding:24px 20px 44px;border-top:1px solid var(--border)">
+    <div style="width:40px;height:4px;background:rgba(255,255,255,.12);border-radius:99px;margin:0 auto 20px"></div>
+
+    <!-- Step 0: Password entry (both servants and amin start here) -->
+    <div id="loginStep0">
+      <div style="font-family:'Tajawal',sans-serif;font-weight:900;font-size:1.05rem;text-align:center;margin-bottom:4px">مرحباً 👋</div>
+      <div style="font-size:.7rem;color:var(--muted);text-align:center;margin-bottom:18px">كنيسة الأميرين تادرس — أسرة ثانوي</div>
+      <input id="pwInput" type="password" placeholder="ادخل الباسورد..."
+        onkeydown="if(event.key==='Enter')checkPwStep()"
+        style="width:100%;padding:13px 16px;outline:none;text-align:center;direction:ltr;margin-bottom:8px;border-radius:12px;font-size:16px"/>
+      <div id="pwErr" style="color:var(--red);font-size:.74rem;text-align:center;min-height:18px;margin-bottom:10px"></div>
+      <button onclick="checkPwStep()" style="width:100%;background:linear-gradient(135deg,var(--accent),var(--accent2));
+        border:none;color:#fff;font-family:'Cairo',sans-serif;font-weight:800;font-size:.92rem;
+        padding:13px;border-radius:13px;cursor:pointer">التالي ←</button>
+    </div>
+
+    <!-- Step 1: Name selector (servants only, after correct pw) -->
+    <div id="loginStep1" style="display:none">
+      <div style="font-family:'Tajawal',sans-serif;font-weight:900;font-size:1.05rem;text-align:center;margin-bottom:4px">اختار اسمك</div>
+      <div style="font-size:.7rem;color:var(--muted);text-align:center;margin-bottom:16px">صيف ٢٠٢٦ 🌟</div>
+      <div id="servantNameList" style="max-height:260px;overflow-y:auto;display:flex;flex-direction:column;gap:7px;margin-bottom:14px;scrollbar-width:none"></div>
+      <button id="loginDoneBtn" disabled onclick="doServantLogin()"
+        style="width:100%;background:linear-gradient(135deg,var(--accent),var(--accent2));
+        border:none;color:#fff;font-family:'Cairo',sans-serif;font-weight:800;font-size:.92rem;
+        padding:13px;border-radius:13px;cursor:pointer;opacity:.4;transition:opacity .2s">
+        دخول ✅
+      </button>
+    </div>
+  </div>
+</div>
+
+<header>
+  <div style="display:flex;align-items:center;gap:10px">
+    <div class="logo">🤝</div>
+    <div><div class="h-title">افتقادي</div><div class="h-sub">أسرة ثانوي - جاردنيا</div></div>
+  </div>
+  <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px">
+    <button onclick="goToHub()"
+      style="width:110px;box-sizing:border-box;text-align:center;
+      background:rgba(245,166,35,.1);border:1px solid rgba(245,166,35,.28);color:var(--accent);
+      font-family:'Cairo',sans-serif;font-size:.68rem;font-weight:700;padding:4px 10px;
+      border-radius:20px;cursor:pointer;white-space:nowrap">الواجهة الرئيسية ◄</button>
+    <div class="class-lbl" id="classLabel" style="width:110px;box-sizing:border-box;text-align:center">أولى ثانوي - بنات</div>
+  </div>
+</header>
+
+<!-- ══ SERVANT TABS: الافتقاد | أعياد | ملخص عام | المخدومين ══ -->
+<div class="nav-tabs" id="servantTabs">
+  <button class="nav-tab active" onclick="sTab(0,this)">🤝 الافتقاد</button>
+  <button class="nav-tab" onclick="sTab(1,this)">🎂 أعياد الميلاد</button>
+  <button class="nav-tab" onclick="sTab(2,this)">📊 ملخص عام</button>
+  <button class="nav-tab" onclick="sTab(3,this)">👥 المخدومين</button>
+</div>
+
+<!-- ══ AMIN TABS: ملخص عام | تقرير الأسبوع | الأنشطة | بالأيام | المخدومين ══ -->
+<div class="nav-tabs" id="aminTabs" style="display:none">
+  <button class="nav-tab active" onclick="aTab(0,this)">📊 ملخص عام</button>
+  <button class="nav-tab" onclick="aTab(1,this)">📈 تقرير الأسبوع</button>
+  <button class="nav-tab" onclick="aTab(2,this)">🏃 الأنشطة</button>
+  <button class="nav-tab" onclick="aTab(3,this)">🎂 أعياد الميلاد</button>
+  <button class="nav-tab" onclick="aTab(4,this)">👥 المخدومين</button>
+  <button class="nav-tab" onclick="aTab(5,this)">🏪 المتجر</button>
+</div>
+
+<!-- ════════════════ SERVANT VIEW ════════════════ -->
+<div id="servantView">
+
+  <!-- sv0: الافتقاد -->
+  <div class="section active" id="sv0">
+    <div class="info-box">الغياب محسوب على حضور <strong style="color:var(--text)">الأسرة</strong> — المخدوم يظهر لو غاب <strong style="color:var(--text)">مرتين متتاليتين</strong> أو أكتر</div>
+    <div id="fuCounter" style="font-size:.78rem;font-weight:700;color:var(--accent);margin-bottom:12px"></div>
+    <div id="fuList"></div>
+  </div>
+
+  <!-- sv1: أعياد الميلاد -->
+  <div class="section" id="sv1">
+    <div class="info-box">🎂 أعياد ميلاد مخدومين فصلك خلال الشهر الحالي — فرصة افتقاد طبيعية وجميلة</div>
+    <div id="svBdayList"></div>
+  </div>
+
+  <!-- sv2: ملخص عام (الفصل) -->
+  <div class="section" id="sv2">
+    <div id="sv2Content"></div>
+  </div>
+
+  <!-- sv3: المخدومين (آخر تاب — على الشمال) -->
+  <div class="section" id="sv3">
+    <div style="display:flex;gap:8px;margin-bottom:12px;align-items:center">
+      <div style="flex:1;position:relative">
+        <input id="svSearch" type="text" placeholder="🔍 ابحث باسم المخدوم..." oninput="renderSvStudents()"
+          style="width:100%;background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:'Cairo',sans-serif;font-size:.78rem;padding:10px 13px;padding-left:34px;border-radius:11px;outline:none"/>
+        <span id="svSearchX" onclick="clearSvSearch()" style="display:none;position:absolute;left:10px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:12px;color:var(--muted);background:rgba(255,255,255,.1);border-radius:50%;width:20px;height:20px;align-items:center;justify-content:center;font-weight:800">✕</span>
+      </div>
+      <button onclick="openEditModal(-1)" style="background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;color:#fff;font-family:'Cairo',sans-serif;font-size:.72rem;font-weight:700;padding:10px 13px;border-radius:11px;cursor:pointer;white-space:nowrap">+ مخدوم</button>
+      <button onclick="exportStudents('servant')" style="background:rgba(52,201,123,.12);border:1px solid rgba(52,201,123,.3);color:var(--green);font-family:'Cairo',sans-serif;font-size:.72rem;font-weight:700;padding:10px 13px;border-radius:11px;cursor:pointer;white-space:nowrap">⬇️ Excel</button>
+    </div>
+    <div id="svStudentsList"></div>
+  </div>
+
+</div>
+
+<!-- ════════════════ AMIN VIEW ════════════════ -->
+<div id="aminView" style="display:none">
+
+  <!-- av0: ملخص عام -->
+  <div class="section active" id="av0">
+    <div class="sec-title">📊 ملخص عام — على مستوى الخدمة</div>
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-bottom:16px">
+      <div class="stat-card"><div class="stat-num" style="color:var(--blue)" id="amTotalStudents">—</div><div class="stat-lbl">إجمالي المخدومين</div></div>
+      <div class="stat-card"><div class="stat-num" style="color:var(--green)" id="amAvgPct">—</div><div class="stat-lbl">متوسط الحضور</div></div>
+      <div class="stat-card"><div class="stat-num" style="color:var(--red)" id="amNeedFollow">—</div><div class="stat-lbl">محتاجين افتقاد</div></div>
+      <div class="stat-card"><div class="stat-num" style="color:var(--accent)" id="amFollowedWeek">—</div><div class="stat-lbl">افتقاد اتعمل الأسبوع ده</div></div>
+    </div>
+
+    <!-- اتجاه الحضور أسبوعياً (ديناميكي) -->
+    <div class="panel" id="trendPanel"></div>
+
+    <!-- مقارنة الفصول (ديناميكي) -->
+    <div class="panel" id="classComparePanel"></div>
+
+    <!-- فصول محتاجة دعم (ديناميكي) -->
+    <div id="supportNeededPanel"></div>
+
+    <!-- حالة الفصول (ديناميكي) -->
+    <div class="sec-title">حالة الفصول — الافتقاد</div>
+    <div class="panel" style="overflow-x:auto;padding:6px 12px;margin-bottom:16px">
+      <table>
+        <thead><tr><th>الفصل</th><th>محتاجين</th><th>اتفقدوا</th><th>رجعوا</th></tr></thead>
+        <tbody id="classStatusBody"></tbody>
+      </table>
+    </div>
+
+    <div class="panel">
+      <div class="sec-title">🏆 أعلى ٥ مخدومين — على مستوى الخدمة</div>
+      <div id="amTop5"></div>
+    </div>
+
+    <div class="sec-title">🏅 أنشط الخدام في الافتقاد</div>
+    <div class="panel" style="padding:4px 14px">
+      <div id="activeServantsBody"></div>
+    </div>
+  </div>
+
+  <!-- av1: تقرير الأسبوع -->
+  <div class="section" id="av1">
+    <select id="aminClassFilter" onchange="renderAminWeek()" style="width:100%;margin-bottom:14px">
+      <option value="">كل الفصول</option>
+      <option value="أولى-بنات">أولى ثانوي - بنات</option>
+      <option value="أولى-ولاد">أولى ثانوي - بنين</option>
+      <option value="ثانية-بنات">ثانية ثانوي - بنات</option>
+      <option value="ثانية-ولاد">ثانية ثانوي - بنين</option>
+      <option value="ثالثة-بنات">ثالثة ثانوي - بنات</option>
+      <option value="ثالثة-ولاد">ثالثة ثانوي - بنين</option>
+    </select>
+    <div style="background:linear-gradient(135deg,rgba(126,184,247,.08),rgba(184,126,247,.06));border:1px solid rgba(126,184,247,.2);border-radius:14px;padding:14px;margin-bottom:14px">
+      <div class="sec-title" id="wkTitle">📈 ملخص الأسبوع — كل الفصول</div>
+      <div class="wk-row"><span>إجمالي الافتقادات</span><strong style="color:var(--blue)" id="wkTotal">١٢</strong></div>
+      <div class="wk-row"><span>تليفونياً 📞</span><strong id="wkPhone">٩</strong></div>
+      <div class="wk-row"><span>بالمنزل 🏠</span><strong id="wkHome">٣</strong></div>
+      <div class="wk-row"><span style="color:var(--green)">رجعوا بعد الافتقاد 🎉</span><strong style="color:var(--green)" id="wkBack">٤</strong></div>
+      <div class="wk-row"><span style="color:var(--red)">اتفقدوا ومرجعوش ⚠️</span><strong style="color:var(--red)" id="wkWarn">٢</strong></div>
+    </div>
+    <div style="background:rgba(52,201,123,.07);border:1px solid rgba(52,201,123,.25);border-radius:12px;padding:12px 14px">
+      <div style="font-weight:800;font-size:.8rem;color:var(--green);margin-bottom:8px">🎉 رجعوا بعد الافتقاد</div>
+      <div style="font-size:.75rem;line-height:2" id="wkBackNames">مارك ريمون شكرى • جولى سامح سعد • يارا يوحنا مكين • بيشوى رومانى عدلى</div>
+    </div>
+  </div>
+
+  <!-- av2: الأنشطة -->
+  <div class="section" id="av2">
+    <div style="display:flex;gap:8px;margin-bottom:12px">
+      <select id="actMonth" onchange="renderAminActs()" style="flex:1">
+        <option value="">كل الشهور</option>
+        <option value="5" selected>يونيو</option>
+        <option value="4">مايو</option>
+        <option value="6">يوليو</option>
+      </select>
+      <select id="actWeek" onchange="renderAminActs()" style="flex:1">
+        <option value="">كل الأسابيع</option>
+        <option value="1">الأسبوع الأول</option>
+        <option value="2">الأسبوع الثاني</option>
+        <option value="3">الأسبوع الثالث</option>
+        <option value="4">الأسبوع الرابع</option>
+      </select>
+    </div>
+    <div id="actsContent"></div>
+  </div>
+
+<!-- av3: أعياد الميلاد -->
+  <div class="section" id="av3">
+    <div style="display:flex;gap:8px;margin-bottom:14px;align-items:center">
+      <select id="bdayMonthFilter" onchange="renderAminBdays()" style="flex:1">
+        <option value="0">يناير</option><option value="1">فبراير</option><option value="2">مارس</option>
+        <option value="3">أبريل</option><option value="4">مايو</option><option value="5" selected>يونيو</option>
+        <option value="6">يوليو</option><option value="7">أغسطس</option><option value="8">سبتمبر</option>
+        <option value="9">أكتوبر</option><option value="10">نوفمبر</option><option value="11">ديسمبر</option>
+      </select>
+    </div>
+    <div class="info-box">🎂 أعياد ميلاد المخدومين في الشهر المحدد — فرصة افتقاد طبيعية وجميلة</div>
+    <div id="aminBdayList"></div>
+  </div>
+
+  <!-- av4: المخدومين (آخر تاب — على الشمال) -->
+  <div class="section" id="av4">
+    <!-- ══ زرار الـ Backup ══ -->
+    <div id="backupReminderBox" style="display:none;margin-bottom:10px;
+      background:linear-gradient(135deg,rgba(232,88,58,.15),rgba(245,166,35,.08));
+      border:1px solid rgba(232,88,58,.4);border-radius:14px;padding:12px 14px;
+      display:flex;align-items:center;gap:10px">
+      <span style="font-size:1.4rem">⚠️</span>
+      <div>
+        <div style="font-family:'Tajawal',sans-serif;font-weight:800;font-size:.82rem;color:var(--accent)">
+          فات أكتر من أسبوع على آخر Backup!
+        </div>
+        <div id="backupLastDate" style="font-size:.68rem;color:var(--muted);margin-top:2px"></div>
+      </div>
+    </div>
+    <button onclick="exportBackup()"
+      style="width:100%;margin-bottom:14px;display:flex;align-items:center;justify-content:center;gap:8px;
+      background:linear-gradient(135deg,rgba(52,201,123,.15),rgba(52,201,123,.05));
+      border:1px solid rgba(52,201,123,.35);border-radius:14px;padding:13px;cursor:pointer;
+      font-family:'Cairo',sans-serif;color:var(--green);font-size:.88rem;font-weight:800">
+      <span style="font-size:1.1rem">💾</span>
+      <span id="backupBtnLabel">تحميل Backup — كل الجداول (Excel)</span>
+    </button>
+    <div id="backupNextInfo" style="display:none;text-align:center;font-size:.66rem;color:var(--muted);margin-top:-10px;margin-bottom:12px"></div>
+    <div style="display:flex;gap:8px;margin-bottom:12px;align-items:center">
+      <div style="flex:1;position:relative">
+        <input id="amSearch" type="text" placeholder="🔍 ابحث باسم المخدوم..." oninput="renderAmStudents()"
+          style="width:100%;background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:'Cairo',sans-serif;font-size:.78rem;padding:10px 13px;padding-left:34px;border-radius:11px;outline:none"/>
+        <span id="amSearchX" onclick="clearAmSearch()" style="display:none;position:absolute;left:10px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:12px;color:var(--muted);background:rgba(255,255,255,.1);border-radius:50%;width:20px;height:20px;align-items:center;justify-content:center;font-weight:800">✕</span>
+      </div>
+      <button onclick="openEditModal(-1)" style="background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;color:#fff;font-family:'Cairo',sans-serif;font-size:.72rem;font-weight:700;padding:10px 13px;border-radius:11px;cursor:pointer;white-space:nowrap">+ مخدوم</button>
+      <button onclick="exportStudents('amin')" style="background:rgba(52,201,123,.12);border:1px solid rgba(52,201,123,.3);color:var(--green);font-family:'Cairo',sans-serif;font-size:.72rem;font-weight:700;padding:10px 13px;border-radius:11px;cursor:pointer;white-space:nowrap">⬇️ Excel</button>
+    </div>
+    <select id="amClassSel" onchange="renderAmStudents()" style="width:100%;margin-bottom:12px">
+      <option value="">كل الفصول</option>
+      <option value="أولى-بنت">أولى ثانوي - بنات</option>
+      <option value="أولى-ولد">أولى ثانوي - بنين</option>
+      <option value="ثانية-بنت">ثانية ثانوي - بنات</option>
+      <option value="ثانية-ولد">ثانية ثانوي - بنين</option>
+    </select>
+    <div id="amStudentsList"></div>
+  </div>
+
+  <!-- ══════════════ av5: المتجر ══════════════ -->
+  <div class="section" id="av5">
+    <div style="margin-bottom:14px">
+      <div style="font-family:'Tajawal',sans-serif;font-weight:800;font-size:1.1rem;margin-bottom:4px;display:flex;align-items:center;gap:8px">
+        🏪 إدارة متجر المكافآت
+      </div>
+      <div style="font-size:.75rem;color:var(--muted)">إضافة وتعديل المكافآت المتاحة في تطبيق نقاطي</div>
+    </div>
+
+    <!-- ══ Add reward form ══ -->
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:16px">
+      <div style="font-family:'Tajawal',sans-serif;font-weight:700;font-size:.85rem;margin-bottom:10px">➕ إضافة مكافأة جديدة</div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <input id="rwName" type="text" placeholder="اسم المكافأة..."
+          style="width:100%;background:var(--card);border:1px solid var(--border);color:var(--text);font-family:'Cairo',sans-serif;font-size:.8rem;padding:10px 13px;border-radius:11px;outline:none"/>
+        <div style="display:flex;gap:8px">
+          <input id="rwPts" type="number" placeholder="عدد النقاط"
+            style="flex:1;background:var(--card);border:1px solid var(--border);color:var(--text);font-family:'Cairo',sans-serif;font-size:.8rem;padding:10px 13px;border-radius:11px;outline:none"/>
+          <input id="rwStock" type="number" placeholder="الكمية (اختياري)"
+            style="flex:1;background:var(--card);border:1px solid var(--border);color:var(--text);font-family:'Cairo',sans-serif;font-size:.8rem;padding:10px 13px;border-radius:11px;outline:none"/>
+        </div>
+        <button onclick="addReward()"
+          style="background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;color:#fff;
+          font-family:'Cairo',sans-serif;font-weight:800;font-size:.82rem;padding:11px;border-radius:11px;cursor:pointer">
+          إضافة المكافأة
+        </button>
+      </div>
+    </div>
+
+    <div style="font-family:'Tajawal',sans-serif;font-weight:700;font-size:.85rem;margin-bottom:10px">📋 المكافآت الحالية</div>
+    <div id="rwList" style="display:flex;flex-direction:column;gap:8px"></div>
+  </div>
+
+</div>
+
+<!-- ══ STUDENT DETAIL MODAL ══ -->
+<div id="stuModal" onclick="if(event.target===this)closeStudentCard()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(5px);z-index:200;align-items:center;justify-content:center;padding:22px">
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:18px;padding:20px;width:100%;max-width:360px;max-height:85vh;overflow-y:auto;position:relative">
+    <button onclick="closeStudentCard()" style="position:absolute;top:12px;left:12px;background:rgba(255,255,255,.07);border:none;color:var(--muted);width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:13px;font-weight:800">✕</button>
+    <div id="stuModalBody"></div>
+  </div>
+</div>
+
+<!-- ══ REMINDER MODAL ══ -->
+<div id="reminderModal" onclick="if(event.target===this)closeReminderModal()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(5px);z-index:210;align-items:center;justify-content:center;padding:22px">
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:18px;padding:20px;width:100%;max-width:360px">
+    <div style="font-family:'Tajawal',sans-serif;font-weight:800;font-size:1.02rem;margin-bottom:4px">📲 ابعت افتقاد</div>
+    <div id="remTargetInfo" style="font-size:.72rem;color:var(--muted);margin-bottom:14px"></div>
+
+    <div style="display:flex;flex-direction:column;gap:11px">
+      <div>
+        <div style="font-size:.72rem;color:var(--muted);margin-bottom:5px">نوع الرسالة</div>
+        <div style="position:relative">
+          <select id="remType" onchange="applyReminderTemplate()"
+            style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:'Cairo',sans-serif;font-size:.82rem;padding:10px 13px 10px 32px;border-radius:10px;outline:none;-webkit-appearance:none;appearance:none">
+            <option value="trip">🚌 تذكير رحلة</option>
+            <option value="visit">رسالة افتقاد</option>
+            <option value="verse">📖 آية تشجيع (امتحانات)</option>
+            <option value="custom">✏️ رسالة مخصصة</option>
+          </select>
+          <span style="position:absolute;left:13px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--muted);font-size:.7rem">▼</span>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:.72rem;color:var(--muted);margin-bottom:5px">نص الرسالة (تقدر تعدّله)</div>
+        <textarea id="remText" rows="5"
+          style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:'Cairo',sans-serif;font-size:.82rem;padding:10px 13px;border-radius:10px;outline:none;resize:vertical;line-height:1.6"></textarea>
+        <button id="remRerollBtn" onclick="applyReminderTemplate()" style="display:none;width:100%;margin-top:7px;background:rgba(245,166,35,.1);border:1px solid rgba(245,166,35,.3);
+          color:var(--accent);font-family:'Cairo',sans-serif;font-weight:700;font-size:.74rem;padding:8px;border-radius:9px;cursor:pointer">
+          🔄 جرّب آية تانية
+        </button>
+      </div>
+      <button onclick="sendReminderWA()"
+        style="width:100%;background:linear-gradient(135deg,#34c97b,#1db06a);border:none;color:#fff;
+        font-family:'Cairo',sans-serif;font-weight:800;font-size:.85rem;padding:12px;border-radius:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        ابعت على واتساب
+      </button>
+      <button onclick="closeReminderModal()"
+        style="width:100%;background:transparent;border:1px solid var(--border);color:var(--muted);
+        font-family:'Cairo',sans-serif;font-weight:700;font-size:.8rem;padding:10px;border-radius:11px;cursor:pointer">
+        إلغاء
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ EDIT/ADD STUDENT MODAL ══ -->
+<div id="editModal" onclick="if(event.target===this)closeEditModal()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(5px);z-index:300;align-items:center;justify-content:center;padding:20px">
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:18px;padding:20px;width:100%;max-width:360px;position:relative">
+    <button onclick="closeEditModal()" style="position:absolute;top:12px;left:12px;background:rgba(255,255,255,.07);border:none;color:var(--muted);width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:13px;font-weight:800">✕</button>
+    <div id="editModalTitle" style="font-weight:900;font-size:1rem;text-align:center;margin-bottom:18px;padding-right:10px">➕ إضافة مخدوم جديد</div>
+
+    <div style="display:flex;flex-direction:column;gap:11px">
+      <div>
+        <div style="font-size:.72rem;color:var(--muted);margin-bottom:5px">الاسم الكامل (ثلاثي)</div>
+        <input id="editName" type="text" placeholder="مثال: مريم وليم جرجس" style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:'Cairo',sans-serif;font-size:.82rem;padding:10px 13px;border-radius:10px;outline:none;direction:rtl"/>
+      </div>
+      <div style="display:flex;gap:9px">
+        <div style="flex:1">
+          <div style="font-size:.72rem;color:var(--muted);margin-bottom:5px">الصف</div>
+          <select id="editGrade" style="width:100%">
+            <option value="أولى">أولى ثانوي</option>
+            <option value="ثانية">ثانية ثانوي</option>
+            <option value="ثالثة">ثالثة ثانوي</option>
+          </select>
+        </div>
+        <div style="flex:1">
+          <div style="font-size:.72rem;color:var(--muted);margin-bottom:5px">النوع</div>
+          <select id="editGender" style="width:100%">
+            <option value="بنت">بنات</option>
+            <option value="ولد">بنين</option>
+          </select>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:.72rem;color:var(--muted);margin-bottom:5px">رقم التليفون</div>
+        <input id="editPhone" type="tel" placeholder="01XXXXXXXXX" style="width:100%;padding:10px 13px;direction:ltr;text-align:right"/>
+      </div>
+      <div style="display:flex;gap:9px">
+        <div style="flex:1">
+          <div style="font-size:.72rem;color:var(--muted);margin-bottom:5px">📞 رقم الأب</div>
+          <input id="editFatherPhone" type="tel" placeholder="01XXXXXXXXX" style="width:100%;padding:10px 13px;direction:ltr;text-align:right"/>
+        </div>
+        <div style="flex:1">
+          <div style="font-size:.72rem;color:var(--muted);margin-bottom:5px">📞 رقم الأم</div>
+          <input id="editMotherPhone" type="tel" placeholder="01XXXXXXXXX" style="width:100%;padding:10px 13px;direction:ltr;text-align:right"/>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:.72rem;color:var(--muted);margin-bottom:5px">تاريخ الميلاد 🎂</div>
+        <input id="editBirthday" type="date" style="width:100%;padding:10px 13px;direction:ltr"/>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:8px;margin-top:16px">
+      <button onclick="closeEditModal()" style="flex:1;background:rgba(255,255,255,.05);border:1px solid var(--border);color:var(--muted);font-family:'Cairo',sans-serif;font-size:.82rem;font-weight:700;padding:12px;border-radius:12px;cursor:pointer">إلغاء</button>
+      <button onclick="saveEdit()" style="flex:2;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;color:#fff;font-family:'Cairo',sans-serif;font-size:.85rem;font-weight:800;padding:12px;border-radius:12px;cursor:pointer">💾 حفظ</button>
+    </div>
+  </div>
+</div>
+
+<div class="fu-toast" id="toast"></div>
+
+<script>
+// ═══ WhatsApp logo ═══
+const WA_SVG = '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>';
+
+const WA_SVG_BIG = WA_SVG.replace('width="14" height="14"','width="19" height="19"');
+
+// ═══ بيانات الافتقاد — مرتبة من الأقل للأعلى غياب ═══
+// ═══════════════════════════════════════════
+// SUPABASE CONNECTION
+// ═══════════════════════════════════════════
+const SB_URL = 'https://rmcooocrrvdmrwuzqgqt.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJtY29vb2NycnZkbXJ3dXpxZ3F0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0NjMzMjYsImV4cCI6MjA5NjAzOTMyNn0.Lcd0HDC-qyweB1cxqC_mV7um6utvVk0ZjletqP6G1W0';
+const HDR = {'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Accept':'application/json'};
+
+async function sbGet(path){
+  const r = await fetch(SB_URL+'/rest/v1/'+path,{mode:'cors',headers:HDR});
+  if(!r.ok) throw new Error('HTTP '+r.status+': '+await r.text());
+  return r.json();
+}
+async function sbPost(path, body){
+  const r = await fetch(SB_URL+'/rest/v1/'+path,{
+    method:'POST', mode:'cors',
+    headers:{...HDR, 'Prefer':'return=representation'},
+    body: JSON.stringify(body)
+  });
+  if(!r.ok) throw new Error('HTTP '+r.status+': '+await r.text());
+  return r.json();
+}
+async function sbPatch(path, body){
+  const r = await fetch(SB_URL+'/rest/v1/'+path,{
+    method:'PATCH', mode:'cors',
+    headers:{...HDR, 'Prefer':'return=representation'},
+    body: JSON.stringify(body)
+  });
+  if(!r.ok) throw new Error('HTTP '+r.status+': '+await r.text());
+  return r.json();
+}
+async function sbDelete(path){
+  const r = await fetch(SB_URL+'/rest/v1/'+path,{
+    method:'DELETE', mode:'cors', headers:HDR
+  });
+  if(!r.ok) throw new Error('HTTP '+r.status+': '+await r.text());
+}
+
+// ═══ Activity points (same as نقاطي) ═══
+const ACTIVITIES = [
+  {key:'osra',      label:'الأسرة',               icon:'🏠', pts:15},
+  {key:'mahragan',  label:'المهرجان',              icon:'🎉', pts:20},
+  {key:'ktab',      label:'درس كتاب',              icon:'📖', pts:15},
+  {key:'egtmaia',   label:'خدمة اجتماعية',        icon:'🤝', pts:15},
+  {key:'qodas',     label:'القداس الشهري',         icon:'⛪', pts:25},
+  {key:'mahfouzat', label:'المحفوظات',            icon:'📝', pts:10},
+  {key:'qebti',     label:'قبطي',                  icon:'☦️', pts:10},
+  {key:'alhan',     label:'ألحان',                 icon:'🎵', pts:10},
+  {key:'masabqa',   label:'مسابقة الكتاب المقدس',  icon:'📜', pts:300},
+];
+
+// ═══ Raw data from Supabase ═══
+let RAW_STUDENTS = [];
+let RAW_ATTENDANCE = [];
+let RAW_REDEMPTIONS = [];
+let RAW_FOLLOWNOTES = [];
+
+// ═══ Computed data (replaces old hardcoded arrays) ═══
+let STUDENTS = [];  // enriched students with pct/pts/lastAtt/lastNote/birthday
+let DEMO = [];      // students needing follow-up (consecutive absences on الأسرة)
+
+const MONTH_AR = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+
+// ─── Points calc (identical to نقاطي) ───
+function calcPts(sid){
+  return RAW_ATTENDANCE.filter(a=>a.student_id==sid).reduce((s,a)=>{
+    const ac=ACTIVITIES.find(x=>x.key===a.activity); return s+(ac?ac.pts:0);
+  },0);
+}
+function calcRedeemed(sid){
+  return RAW_REDEMPTIONS.filter(r=>String(r.student_id)===String(sid)).reduce((s,r)=>s+(Number(r.points)||0),0);
+}
+function calcNetPts(sid){ return Math.max(0, calcPts(sid)-calcRedeemed(sid)); }
+
+// ─── Attendance % ───
+function totalSessionsAll(){
+  return new Set(RAW_ATTENDANCE.map(a=>a.session_date+'|'+a.activity)).size;
+}
+function calcPct(sid){
+  const maxS = totalSessionsAll();
+  const att = RAW_ATTENDANCE.filter(a=>a.student_id==sid).length;
+  return maxS ? Math.round(att/maxS*100) : 0;
+}
+
+// ─── Date format ───
+function fmtDateAr(d){
+  if(!d) return null;
+  try{ return new Date(d+'T00:00:00').toLocaleDateString('ar-EG',{day:'numeric',month:'long'}); }
+  catch(e){ return d; }
+}
+
+// ─── Last attended date for a student ───
+function lastAttendedDate(sid){
+  const rows = RAW_ATTENDANCE.filter(a=>a.student_id==sid)
+    .sort((a,b)=>b.session_date.localeCompare(a.session_date));
+  return rows.length ? rows[0].session_date : null;
+}
+
+// ─── Last follow-up note for a student ───
+function lastNoteFor(sid){
+  const n = RAW_FOLLOWNOTES.filter(x=>x.student_id==sid)
+    .sort((a,b)=>(b.created_at||'').localeCompare(a.created_at||''));
+  return n.length ? n[0] : null;
+}
+
+// ─── Consecutive absences on الأسرة (osra) only ───
+function osraSessions(){
+  // unique الأسرة session dates that actually happened
+  return [...new Set(RAW_ATTENDANCE.filter(a=>a.activity==='osra').map(a=>a.session_date))]
+    .sort((a,b)=>b.localeCompare(a)); // newest first
+}
+function consecutiveAbsences(sid){
+  const sessions = osraSessions();
+  let consec=0;
+  for(const date of sessions){
+    const present = RAW_ATTENDANCE.some(a=>a.student_id==sid && a.activity==='osra' && a.session_date===date);
+    if(present) break;
+    consec++;
+  }
+  return {consec, total: sessions.length};
+}
+
+// ─── Build STUDENTS + DEMO from raw data ───
+function computeData(){
+  STUDENTS = RAW_STUDENTS.map(s=>{
+    const note = lastNoteFor(s.id);
+    const lastAtt = lastAttendedDate(s.id);
+    return {
+      id: s.id,
+      name: s.name,
+      grade: gradeMatch2(s.grade),   // normalize to أولى/ثانية/ثالثة
+      gender: genderMatch(s.gender), // موحّد: 'بنت' or 'ولد'
+      phone: s.phone || null,
+      father_phone: s.father_phone || null,
+      mother_phone: s.mother_phone || null,
+      birthday: s.birthday || null,
+      pct: calcPct(s.id),
+      pts: calcNetPts(s.id),
+      lastAtt: lastAtt ? fmtDateAr(lastAtt) : 'لم يحضر',
+      lastNote: note ? note.note : null,
+    };
+  });
+
+  // Follow-up list: 2+ consecutive absences on الأسرة
+  DEMO = RAW_STUDENTS.map(s=>{
+    const {consec, total} = consecutiveAbsences(s.id);
+    const note = lastNoteFor(s.id);
+    const lastAtt = lastAttendedDate(s.id);
+    // "اتفقد ومرجعش" = has a follow-up note but still absent after it
+    let warn = false;
+    if(note && lastAtt){
+      warn = new Date(note.created_at) > new Date(lastAtt+'T23:59:59');
+    } else if(note && !lastAtt){
+      warn = true;
+    }
+    return {
+      id: s.id,
+      name: s.name,
+      grade: gradeMatch2(s.grade),
+      gender: genderMatch(s.gender),
+      phone: s.phone || null,
+      consec,
+      total,
+      last: lastAtt ? fmtDateAr(lastAtt) : 'لم يحضر',
+      followed: (note && (note.note.includes('تم الافتقاد'))) ? note.note : null,
+      note: (note && !note.note.includes('تم الافتقاد')) ? note.note : null,
+      warn,
+    };
+  }).filter(s => s.consec >= 2 && s.total >= 2);  // needs follow-up
+}
+
+const SERVANT_CLASS = {grade:'الأول الثانوي', gender:'بنت'}; // يتحدّث بعد الدخول
+let isAminView = false;
+
+// Grade normalizer: long → short form
+function gradeMatch2(g){
+  const m={'الأول الثانوي':'أولى','الثاني الثانوي':'ثانية','الثالث الثانوي':'ثالثة'};
+  return (m[g]||g||'').trim();
+}
+// Gender normalizer: بنين/بنات/ولاد → ولد/بنت (موحّد في كل التطبيق)
+function genderMatch(g){
+  g = (g||'').trim();
+  if(g === 'بنين' || g === 'ولاد') return 'ولد';
+  if(g === 'بنات') return 'بنت';
+  return g;
+}
+const SCOLORS=['#e8583a','#34c97b','#7eb8f7','#f5a623','#b87ef7','#ff6b9d'];
+
+// ═══ Passwords & login ═══
+const SERVANT_PW = 'admin2026';
+const AMIN_PW    = 'amin2026';
+
+let SERVANT_CLASSES = {};  // يتملّى من جدول servants في Supabase
+
+// ─── تحميل الخدام من Supabase ───
+let lastServantError = '';
+async function loadServants(){
+  try{
+    const rows = await sbGet('servants?select=*&order=name.asc');
+    SERVANT_CLASSES = {};
+    rows.forEach(s => {
+      SERVANT_CLASSES['م/ ' + s.name] = { grade: (s.grade||'').trim(), gender: genderMatch(s.gender) };
+    });
+    lastServantError = rows.length ? '' : 'الجدول رجع فاضي (٠ خادم)';
+  }catch(e){
+    lastServantError = e.message || String(e);
+    console.error('تعذّر تحميل الخدام:', e);
+  }
+}
+
+function getGradeShort(g){
+  return g==='الأول الثانوي'?'أولى':g==='الثاني الثانوي'?'ثانية':'ثالثة';
+}
+
+// ─── Servant colors ───
+const S_COLORS   = ['#e8583a','#34c97b','#7eb8f7','#f5a623','#b87ef7','#ff6b9d','#4fc3f7','#81c784','#ffb347'];
+let selectedServant = null;
+
+async function checkPwStep(){
+  const val = document.getElementById('pwInput').value;
+  const err = document.getElementById('pwErr');
+  if(val === SERVANT_PW){
+    // لو الخادم اختار اسمه قبل كده → ادخل على طول لفصله
+    const saved = localStorage.getItem('eftqad_servant');
+    if(saved && SERVANT_CLASSES[saved]){
+      selectedServant = saved;
+      const cls = SERVANT_CLASSES[saved];
+      SERVANT_CLASS.grade  = cls.grade;
+      SERVANT_CLASS.gender = cls.gender;
+      const gLabel = cls.gender==='بنت' ? 'بنات' : 'بنين';
+      document.getElementById('classLabel').textContent = getGradeShort(cls.grade)+' - '+gLabel;
+      launchApp(false);
+      return;
+    }
+    // أول مرة → اختار الاسم
+    document.getElementById('loginStep0').style.display = 'none';
+    document.getElementById('loginStep1').style.display = 'block';
+    await buildServantList();
+  } else if(val === AMIN_PW){
+    // Go straight to amin view
+    document.getElementById('classLabel').textContent = '👑 أمين الخدمة';
+    launchApp(true);
+  } else {
+    err.textContent = 'باسورد غلط ❌';
+    setTimeout(()=>err.textContent='', 2000);
+  }
+}
+
+function checkPw(){ checkPwStep(); }     // alias kept for safety
+function checkAminPw(){ checkPwStep(); } // alias
+
+async function buildServantList(){
+  let names = Object.keys(SERVANT_CLASSES);
+  // If servants not loaded yet, load them now
+  if(names.length === 0){
+    document.getElementById('servantNameList').innerHTML =
+      '<div style="text-align:center;color:var(--muted);padding:30px;font-size:.85rem">جارٍ تحميل الخدام... ⏳</div>';
+    await loadServants();
+    names = Object.keys(SERVANT_CLASSES);
+  }
+  if(names.length === 0){
+    document.getElementById('servantNameList').innerHTML =
+      '<div style="text-align:center;color:var(--red);padding:24px;font-size:.78rem;line-height:1.8">تعذّر تحميل الخدام<br/><span style="color:var(--muted);font-size:.7rem">'+(lastServantError||'')+'</span><br/><button onclick="buildServantList()" style="margin-top:10px;background:var(--surface);border:1px solid var(--border);color:var(--accent);font-family:Cairo,sans-serif;font-size:.72rem;font-weight:700;padding:7px 16px;border-radius:9px;cursor:pointer">حاول تاني 🔄</button></div>';
+    return;
+  }
+  document.getElementById('servantNameList').innerHTML = names.map((key,i) => {
+    const displayName = key; // already has م/
+    const initials = key.replace('م/ ','').split(' ').slice(0,2).map(w=>w[0]).join('');
+    return `<div class="sv-row" id="svr-${i}" onclick="pickServant('${key.replace(/'/g,"\'")}',${i})"
+      style="background:var(--surface);border:1.5px solid var(--border);border-radius:12px;
+      padding:11px 14px;display:flex;align-items:center;gap:11px;cursor:pointer;transition:all .2s">
+      <div style="width:34px;height:34px;border-radius:50%;background:${S_COLORS[i%S_COLORS.length]};
+        display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;flex-shrink:0">${initials}</div>
+      <div style="flex:1;font-size:.88rem;font-weight:700">${displayName}</div>
+      <div id="sv-check-${i}" style="font-size:16px;opacity:0;transition:opacity .2s">✅</div>
+    </div>`;
+  }).join('');
+}
+
+function pickServant(key, i){
+  selectedServant = key;
+  document.querySelectorAll('.sv-row').forEach((el,j)=>{
+    el.style.background = 'var(--surface)';
+    el.style.borderColor = 'var(--border)';
+    document.getElementById('sv-check-'+j).style.opacity = '0';
+  });
+  document.getElementById('svr-'+i).style.background = 'rgba(245,166,35,.1)';
+  document.getElementById('svr-'+i).style.borderColor = 'var(--accent)';
+  document.getElementById('sv-check-'+i).style.opacity = '1';
+  const btn = document.getElementById('loginDoneBtn');
+  btn.disabled = false;
+  btn.style.opacity = '1';
+}
+
+function doServantLogin(){
+  if(!selectedServant) return;
+  // Save to localStorage for future use
+  localStorage.setItem('eftqad_servant', selectedServant);
+  const cls = SERVANT_CLASSES[selectedServant];
+  if(cls){
+    SERVANT_CLASS.grade  = cls.grade;
+    SERVANT_CLASS.gender = cls.gender;
+    const gLabel = cls.gender==='بنت' ? 'بنات' : 'بنين';
+    document.getElementById('classLabel').textContent = getGradeShort(cls.grade)+' - '+gLabel;
+  }
+  launchApp(false);
+}
+
+function showAminLogin(){} // removed
+
+
+
+// ═══ BACKUP REMINDER ═══
+function checkBackupReminder(){
+  const box       = document.getElementById('backupReminderBox');
+  const lastEl    = document.getElementById('backupLastDate');
+  const nextEl    = document.getElementById('backupNextInfo');
+  const btnLabel  = document.getElementById('backupBtnLabel');
+  if(!box) return;
+
+  const lastStr = localStorage.getItem('lastBackupDate');
+  if(!lastStr){
+    // لم يتم عمل backup من قبل
+    box.style.display = 'flex';
+    if(lastEl) lastEl.textContent = 'لم يتم عمل Backup من قبل';
+    if(nextEl){ nextEl.style.display='none'; }
+    return;
+  }
+
+  const last    = new Date(lastStr);
+  const now     = new Date();
+  const diffMs  = now - last;
+  const diffDays= Math.floor(diffMs / (1000*60*60*24));
+  const nextDate= new Date(last.getTime() + 7*24*60*60*1000);
+  const nextStr = nextDate.toLocaleDateString('ar-EG',{day:'numeric',month:'long'});
+  const lastStr2= last.toLocaleDateString('ar-EG',{weekday:'long',day:'numeric',month:'long'});
+
+  if(diffDays >= 7){
+    // محتاج backup
+    box.style.display = 'flex';
+    if(lastEl) lastEl.textContent = 'آخر Backup كان ' + lastStr2 + ' (منذ ' + diffDays + ' يوم)';
+    if(nextEl){ nextEl.style.display='none'; }
+    if(btnLabel) btnLabel.textContent = '⚡ اعمل Backup دلوقتي!';
+  } else {
+    // في المعاد
+    box.style.display = 'none';
+    if(nextEl){
+      nextEl.style.display = 'block';
+      nextEl.textContent = '✅ آخر Backup ' + lastStr2 + ' — الموعد القادم: ' + nextStr;
+    }
+    if(btnLabel) btnLabel.textContent = 'تحميل Backup — كل الجداول (Excel)';
+  }
+}
+
+// ═══ STORE / REWARDS MANAGEMENT ═══
+let _rewardsCache = [];
+
+async function loadRewards(){
+  const list = document.getElementById('rwList');
+  list.innerHTML = '<div style="text-align:center;padding:20px;color:var(--muted);font-size:.78rem">جارٍ التحميل...</div>';
+  try {
+    _rewardsCache = await sbGet('rewards?select=*&order=points_cost.asc');
+    renderRewardsList();
+  } catch(e){
+    list.innerHTML = '<div style="text-align:center;padding:20px;color:var(--red);font-size:.78rem">⚠️ خطأ: '+e.message+'</div>';
+  }
+}
+
+function renderRewardsList(){
+  const list = document.getElementById('rwList');
+  if(!_rewardsCache.length){
+    list.innerHTML = '<div style="text-align:center;padding:20px;color:var(--muted);font-size:.78rem">لا توجد مكافآت بعد — أضف أول مكافأة فوق</div>';
+    return;
+  }
+  list.innerHTML = _rewardsCache.map(r => `
+    <div style="background:var(--card);border:1px solid var(--border);border-right:3px solid var(--accent);
+      border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:12px">
+      <div style="font-family:'Tajawal',sans-serif;font-weight:900;font-size:1.05rem;color:var(--accent);
+        background:rgba(245,166,35,.1);border:1px solid rgba(245,166,35,.25);border-radius:10px;
+        padding:8px 4px;min-width:54px;text-align:center;flex-shrink:0">
+        ${r.points_cost}<span style="display:block;font-size:.55rem;color:var(--muted);font-weight:700">نقطة</span>
+      </div>
+      <div style="flex:1;min-width:0">
+        <div style="font-family:'Tajawal',sans-serif;font-weight:700;font-size:.88rem;margin-bottom:2px">${r.name}</div>
+        <div style="font-size:.66rem;color:var(--muted)">${r.stock_qty===null?'كمية غير محدودة':'الكمية المتاحة: '+r.stock_qty}</div>
+      </div>
+      <div style="display:flex;gap:6px;flex-shrink:0">
+        <button onclick="editReward(${r.id})"
+          style="background:rgba(126,184,247,.1);border:1px solid rgba(126,184,247,.3);color:var(--blue);
+          width:32px;height:32px;border-radius:9px;cursor:pointer;font-size:.85rem">✏️</button>
+        <button onclick="deleteReward(${r.id},'${r.name.replace(/'/g,"\\'")}')"
+          style="background:rgba(232,69,69,.1);border:1px solid rgba(232,69,69,.3);color:var(--red);
+          width:32px;height:32px;border-radius:9px;cursor:pointer;font-size:.85rem">🗑️</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+async function addReward(){
+  const name  = document.getElementById('rwName').value.trim();
+  const pts   = parseInt(document.getElementById('rwPts').value);
+  const stockRaw = document.getElementById('rwStock').value.trim();
+  const stock = stockRaw === '' ? null : parseInt(stockRaw);
+
+  if(!name){ toast('اكتب اسم المكافأة'); return; }
+  if(!pts || pts <= 0){ toast('اكتب عدد نقاط صحيح'); return; }
+
+  try {
+    await sbPost('rewards', { name, points_cost: pts, stock_qty: stock, is_active: true });
+    document.getElementById('rwName').value = '';
+    document.getElementById('rwPts').value = '';
+    document.getElementById('rwStock').value = '';
+    toast('✅ تمت إضافة المكافأة');
+    loadRewards();
+  } catch(e){
+    toast('⚠️ خطأ: '+e.message);
+  }
+}
+
+function editReward(id){
+  const r = _rewardsCache.find(x=>x.id===id);
+  if(!r) return;
+  const newName  = prompt('اسم المكافأة:', r.name);
+  if(newName===null) return;
+  const newPts   = prompt('عدد النقاط:', r.points_cost);
+  if(newPts===null) return;
+  const newStock = prompt('الكمية (اتركها فاضية لو غير محدودة):', r.stock_qty===null?'':r.stock_qty);
+  if(newStock===null) return;
+
+  const pts = parseInt(newPts);
+  if(!newName.trim() || !pts || pts<=0){ toast('بيانات غير صحيحة'); return; }
+  const stock = newStock.trim()==='' ? null : parseInt(newStock);
+
+  sbPatch('rewards?id=eq.'+id, { name:newName.trim(), points_cost:pts, stock_qty:stock })
+    .then(()=>{ toast('✅ تم التعديل'); loadRewards(); })
+    .catch(e=>toast('⚠️ خطأ: '+e.message));
+}
+
+function deleteReward(id, name){
+  if(!confirm('متأكد من حذف "'+name+'"؟')) return;
+  sbDelete('rewards?id=eq.'+id)
+    .then(()=>{ toast('🗑️ تم الحذف'); loadRewards(); })
+    .catch(e=>toast('⚠️ خطأ: '+e.message));
+}
+
+// ═══ BACKUP EXPORT ═══
+async function exportBackup(){
+  const btn = event.currentTarget;
+  const orig = btn.innerHTML;
+  btn.innerHTML = '<span style="font-size:1.1rem">⏳</span><span>جارٍ التحميل...</span>';
+  btn.disabled = true;
+
+  try {
+    const wb = XLSX.utils.book_new();
+    const today = new Date().toISOString().slice(0,10);
+
+    // جلب الجداول من Supabase
+    const [students, attendance, redemptions, followup, servants] = await Promise.all([
+      sbGet('students?select=*&order=id.asc'),
+      sbGet('attendance?select=*&order=session_date.desc'),
+      sbGet('points_redemptions?select=*&order=redeemed_at.desc'),
+      sbGet('followup_notes?select=*&order=created_at.desc'),
+      sbGet('servants?select=*&order=id.asc'),
+    ]);
+
+    // ══ حساب ملخص النقاط لكل مخدوم (نفس معادلة التطبيق بالظبط) ══
+    const pointsSummary = (students||[]).map(s => {
+      const totalEarned = (attendance||[])
+        .filter(a => String(a.student_id)===String(s.id) && a.status==='present')
+        .reduce((sum,a) => {
+          const act = ACTIVITIES.find(x=>x.key===a.activity);
+          return sum + (act ? act.pts : 10);
+        }, 0);
+
+      const myRedemptions = (redemptions||[]).filter(r => String(r.student_id)===String(s.id));
+      // المصروف = القيم الموجبة (صرف نقاط عادي أو من المتجر)
+      const totalSpent = myRedemptions
+        .filter(r => Number(r.points) > 0)
+        .reduce((sum,r) => sum + Number(r.points), 0);
+      // المضاف = القيم السالبة (نقاط تشجيعية إضافية) — بالقيمة المطلقة
+      const totalAdded = myRedemptions
+        .filter(r => Number(r.points) < 0)
+        .reduce((sum,r) => sum + Math.abs(Number(r.points)), 0);
+
+      const net = Math.max(0, totalEarned - totalSpent + totalAdded);
+
+      return {
+        'الاسم': s.name,
+        'الصف': s.grade || '',
+        'إجمالي النقاط المكتسبة': totalEarned,
+        'المصروف': totalSpent,
+        'المضاف': totalAdded,
+        'الرصيد الحالي': net,
+      };
+    }).sort((a,b)=> b['الرصيد الحالي'] - a['الرصيد الحالي']);
+
+    // إضافة كل جدول كـ Sheet
+    const sheets = [
+      { name:'ملخص النقاط',     data: pointsSummary || [] },
+      { name:'المخدومين',       data: students     || [] },
+      { name:'الحضور',          data: attendance   || [] },
+      { name:'النقاط',          data: redemptions  || [] },
+      { name:'الافتقاد',        data: followup     || [] },
+      { name:'الخدام',          data: servants     || [] },
+    ];
+
+    sheets.forEach(({name, data}) => {
+      if(data.length){
+        const ws = XLSX.utils.json_to_sheet(data);
+        // عرض مناسب للأعمدة
+        ws['!cols'] = Object.keys(data[0]).map(()=>({wch:20}));
+        XLSX.utils.book_append_sheet(wb, ws, name);
+      } else {
+        const ws = XLSX.utils.aoa_to_sheet([['لا توجد بيانات']]);
+        XLSX.utils.book_append_sheet(wb, ws, name);
+      }
+    });
+
+    // تحميل الملف
+    XLSX.writeFile(wb, `backup-gardinia-${today}.xlsx`);
+    // حفظ تاريخ آخر backup
+    localStorage.setItem('lastBackupDate', new Date().toISOString());
+    checkBackupReminder();
+    btn.innerHTML = '<span style="font-size:1.1rem">✅</span><span>تم التحميل بنجاح! (' + today + ')</span>';
+    setTimeout(()=>{ btn.innerHTML=orig; btn.disabled=false; }, 3000);
+  } catch(e){
+    btn.innerHTML = '<span style="font-size:1.1rem">⚠️</span><span>خطأ: ' + e.message + '</span>';
+    btn.disabled = false;
+    setTimeout(()=>{ btn.innerHTML=orig; btn.disabled=false; }, 4000);
+  }
+}
+
+function goToHub(){
+  // ارجع للواجهة الرئيسية (تطبيق الحضور اللي فيه البوابة)
+  window.location.assign('https://attendancegardinia.netlify.app/');
+}
+
+async function launchApp(amin){
+  isAminView = amin;
+  document.getElementById('loginScreen').style.display = 'none';
+  setView(amin ? 'amin' : 'servant');
+  await loadAllData();
+}
+
+// ═══ Load everything from Supabase ═══
+async function loadAllData(){
+  try{
+    [RAW_STUDENTS, RAW_ATTENDANCE, RAW_REDEMPTIONS, RAW_FOLLOWNOTES] = await Promise.all([
+      sbGet('students?select=*&order=name.asc'),
+      sbGet('attendance?select=*&status=eq.present&order=session_date.desc'),
+      sbGet('points_redemptions?select=student_id,points,reason,redeemed_at'),
+      sbGet('followup_notes?select=*&order=created_at.desc').catch(()=>[]),
+    ]);
+    computeData();
+    renderAll();
+  }catch(e){
+    toast('⚠️ مشكلة في تحميل البيانات — اتأكد من النت');
+    console.error(e);
+  }
+}
+
+function renderAll(){
+  renderFu();
+  renderSvStudents();
+  renderSvBdays();
+  renderSvSummary();
+  renderAmStudents();
+  renderAminDashboard();
+  renderAminWeek();
+  renderAminActs();
+  renderAminBdays();
+}
+
+// Refresh button
+function refreshData(){ loadAllData(); }
+
+function setView(v){
+  const amin = v==='amin';
+  document.getElementById('servantTabs').style.display = amin?'none':'flex';
+  document.getElementById('aminTabs').style.display    = amin?'flex':'none';
+  document.getElementById('servantView').style.display = amin?'none':'block';
+  document.getElementById('aminView').style.display    = amin?'block':'none';
+}
+function sTab(i,btn){
+  document.querySelectorAll('#servantTabs .nav-tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('#servantView .section').forEach((s,j)=>s.classList.toggle('active',i===j));
+}
+function aTab(i,btn){
+  document.querySelectorAll('#aminTabs .nav-tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('#aminView .section').forEach((s,j)=>s.classList.toggle('active',i===j));
+  if(i===4) checkBackupReminder(); // تاب المخدومين
+  if(i===5) loadRewards(); // تاب المتجر
+}
+
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.style.opacity='1';
+  clearTimeout(t._h); t._h=setTimeout(()=>t.style.opacity='0',2400);
+}
+function ini(n){const p=n.trim().split(' ');return p.length>=2?p[0][0]+p[1][0]:p[0][0]}
+
+// ═══ تم الافتقاد — toggle ═══
+async function toggleFollowed(id, type){
+  const s = DEMO.find(x=>x.id===id);
+  const label = type==='phone' ? 'تم الافتقاد تليفونياً 📞' : 'تم الافتقاد بالمنزل 🏠';
+  const servant = selectedServant ? selectedServant.replace('م/ ','') : null;
+
+  if(s.followed === label){
+    // ─── إلغاء: امسح أحدث note بنفس النص من Supabase ───
+    try{
+      // الأحدث الأول
+      const mine = RAW_FOLLOWNOTES
+        .filter(n => n.student_id==id && n.note===label && n.id)
+        .sort((a,b)=>(b.created_at||'').localeCompare(a.created_at||''));
+      if(mine.length){
+        await fetch(SB_URL+'/rest/v1/followup_notes?id=eq.'+mine[0].id,{
+          method:'DELETE',
+          headers:{...HDR, 'Prefer':'return=minimal'}
+        });
+        // شيله من الكاش
+        const i = RAW_FOLLOWNOTES.findIndex(n => n.id===mine[0].id);
+        if(i>-1) RAW_FOLLOWNOTES.splice(i,1);
+      } else {
+        // لو مفيش id (اتسجّل في نفس الجلسة) شيل من الكاش بالنص
+        const i = RAW_FOLLOWNOTES.findIndex(n => n.student_id==id && n.note===label);
+        if(i>-1) RAW_FOLLOWNOTES.splice(i,1);
+      }
+      s.followed = null;
+      toast('↩️ اتشال: '+label);
+      renderFu();
+    }catch(e){
+      toast('⚠️ مش قادر ألغي — اتأكد من النت');
+    }
+  } else {
+    // ─── تسجيل: أضف note جديد في Supabase (واسترجع الـ id) ───
+    try{
+      const r = await fetch(SB_URL+'/rest/v1/followup_notes',{
+        method:'POST',
+        headers:{...HDR, 'Prefer':'return=representation'},
+        body: JSON.stringify({student_id:id, servant_name:servant, note:label})
+      });
+      const saved = await r.json();
+      const row = (saved && saved[0]) ? saved[0] : {student_id:id, servant_name:servant, note:label, created_at:new Date().toISOString()};
+      s.followed = label;
+      RAW_FOLLOWNOTES.unshift(row);  // فيه id دلوقتي عشان نقدر نلغيه بعدين
+      toast('✅ اتسجّل: '+label);
+      renderFu();
+    }catch(e){
+      toast('⚠️ مش قادر أحفظ — اتأكد من النت');
+    }
+  }
+}
+
+// ═══ ملاحظات inline ═══
+let noteOpenFor = null;
+function toggleNoteBox(id){
+  noteOpenFor = (noteOpenFor===id) ? null : id;
+  renderFu();
+  if(noteOpenFor===id){
+    setTimeout(()=>{ const inp=document.getElementById('noteInp-'+id); if(inp) inp.focus(); }, 50);
+  }
+}
+async function saveNote(id){
+  const inp = document.getElementById('noteInp-'+id);
+  if(inp && inp.value.trim()){
+    const note = inp.value.trim();
+    const servant = selectedServant ? selectedServant.replace('م/ ','') : null;
+    try{
+      const r = await fetch(SB_URL+'/rest/v1/followup_notes',{
+        method:'POST',
+        headers:{...HDR, 'Prefer':'return=representation'},
+        body: JSON.stringify({student_id:id, servant_name:servant, note})
+      });
+      const saved = await r.json();
+      const row = (saved && saved[0]) ? saved[0] : {student_id:id, servant_name:servant, note, created_at:new Date().toISOString()};
+      DEMO.find(x=>x.id===id).note = note;
+      RAW_FOLLOWNOTES.unshift(row);
+      noteOpenFor = null;
+      toast('✅ الملاحظة اتسجلت');
+      renderFu();
+    }catch(e){
+      toast('⚠️ مش قادر أحفظ — اتأكد من النت');
+    }
+  }
+}
+
+function renderFu(){
+  // Filter by servant's class
+  const sg = gradeMatch2(SERVANT_CLASS.grade);
+  const filtered = isAminView
+    ? DEMO  // amin sees all
+    : DEMO.filter(s => s.grade===sg && s.gender===SERVANT_CLASS.gender);
+  const need = [...filtered].sort((a,b)=>a.consec-b.consec); // من الأقل للأعلى
+
+  // Count students in this class (for the counter)
+  const classCount = isAminView
+    ? RAW_STUDENTS.length
+    : RAW_STUDENTS.filter(s => gradeMatch2(s.grade)===sg && genderMatch(s.gender)===SERVANT_CLASS.gender).length;
+
+  const totalOsra = osraSessions().length;
+  document.getElementById('fuCounter').textContent = need.length
+    ? `🔔 ${need.length} محتاج افتقاد من ${classCount} في الفصل`
+    : '';
+
+  if(!need.length){
+    let msg;
+    if(totalOsra < 2){
+      msg = `<div style="text-align:center;padding:40px 20px"><div style="font-size:2.5rem;margin-bottom:10px">🌱</div><div style="color:var(--muted);font-size:.85rem;line-height:1.8">لسه مفيش جلستين أسرة متسجلين<br/>الافتقاد هيشتغل تلقائياً مع الوقت</div></div>`;
+    } else {
+      msg = `<div style="text-align:center;padding:40px 20px"><div style="font-size:2.5rem;margin-bottom:10px">🎉</div><div style="color:var(--green);font-weight:800;font-size:.95rem">كل المخدومين في الفصل منتظمين!</div><div style="color:var(--muted);font-size:.72rem;margin-top:6px">مفيش حد غاب مرتين متتاليتين على الأسرة</div></div>`;
+    }
+    document.getElementById('fuList').innerHTML = msg;
+    return;
+  }
+
+  document.getElementById('fuList').innerHTML = need.map(s=>{
+    const isRed = s.consec>=3;
+    const color = isRed?'var(--red)':'#f5a623';
+    const border= isRed?'rgba(232,69,69,.4)':'rgba(245,166,35,.35)';
+    const isPhoneDone = s.followed==='تم الافتقاد تليفونياً 📞';
+    const isHomeDone  = s.followed==='تم الافتقاد بالمنزل 🏠';
+    return `
+    <div style="background:var(--surface);border:1.5px solid ${s.followed?'rgba(52,201,123,.4)':border};border-right:4px solid ${s.followed?'var(--green)':color};border-radius:14px;padding:14px;margin-bottom:10px">
+      <div style="display:flex;align-items:center;gap:11px;margin-bottom:10px">
+        <div style="width:40px;height:40px;border-radius:50%;background:${SCOLORS[s.id%SCOLORS.length]};display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#fff;flex-shrink:0">${ini(s.name)}</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-weight:800;font-size:.9rem;unicode-bidi:plaintext">${s.name}</div>
+          <div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:3px">
+            ${s.warn?'<span style="font-size:.6rem;background:rgba(232,69,69,.15);color:var(--red);padding:2px 7px;border-radius:10px;font-weight:700">⚠️ اتفقد ومرجعش</span>':''}
+            ${s.followed?'<span style="font-size:.6rem;background:rgba(52,201,123,.15);color:var(--green);padding:2px 7px;border-radius:10px;font-weight:700">✅ '+s.followed+'</span>':''}
+          </div>
+        </div>
+        <div style="text-align:center;flex-shrink:0;max-width:74px">
+          ${s.consec > 4
+            ? `<div style="font-size:.66rem;font-weight:900;color:var(--red);line-height:1.4;background:rgba(232,69,69,.12);border:1px solid rgba(232,69,69,.35);border-radius:10px;padding:6px 8px">⏳ أكثر من<br/>شهر غياب</div>`
+            : `<div style="display:inline-flex;flex-direction:column;align-items:center;gap:2px;
+                background:${s.followed?'rgba(52,201,123,.15)':color==='var(--red)'?'rgba(232,69,69,.15)':'rgba(245,166,35,.15)'};
+                border:1.5px solid ${s.followed?'rgba(52,201,123,.5)':color==='var(--red)'?'rgba(232,69,69,.5)':'rgba(245,166,35,.5)'};
+                border-radius:14px;padding:8px 14px">
+                <div style="font-family:'Tajawal',sans-serif;font-weight:900;font-size:2rem;line-height:1;
+                  color:${s.followed?'var(--green)':color}">${s.consec}</div>
+                <div style="font-size:.6rem;color:${s.followed?'var(--green)':color};font-weight:700">غياب متتالي</div>
+              </div>`}
+        </div>
+      </div>
+      <div style="font-size:.7rem;color:var(--muted);margin-bottom:11px">⏰ آخر حضور: ${s.last}</div>
+      ${s.note?`<div style="font-size:.7rem;background:rgba(126,184,247,.07);border-right:2px solid var(--blue);border-radius:0 8px 8px 0;padding:7px 11px;margin-bottom:11px">📝 ${s.note} <span style="color:var(--muted)">— النهارده</span></div>`:''}
+      <div style="display:flex;gap:7px;margin-bottom:8px">
+        ${s.phone
+          ? `<a href="tel:${s.phone}" class="act-btn">📞 اتصال</a>
+             <button onclick="openReminderModal(${s.id})" class="act-btn">${WA_SVG} واتساب</button>`
+          : `<div style="flex:1;text-align:center;background:rgba(255,255,255,.04);border:1px dashed var(--border);color:var(--muted);font-size:.7rem;padding:9px;border-radius:10px">📵 لا يوجد رقم تليفون</div>`}
+      </div>
+      <div style="display:flex;gap:7px">
+        <button onclick="toggleFollowed(${s.id},'phone')" style="flex:1;background:${isPhoneDone?'rgba(52,201,123,.18)':'rgba(126,184,247,.1)'};border:1px solid ${isPhoneDone?'rgba(52,201,123,.45)':'rgba(126,184,247,.3)'};color:${isPhoneDone?'var(--green)':'var(--blue)'};font-family:'Cairo',sans-serif;font-size:.68rem;font-weight:700;padding:8px;border-radius:10px;cursor:pointer">${isPhoneDone?'✕ إلغاء':'✅ تم الافتقاد تليفونياً'}</button>
+        <button onclick="toggleFollowed(${s.id},'home')" style="flex:1;background:${isHomeDone?'rgba(52,201,123,.18)':'rgba(184,126,247,.1)'};border:1px solid ${isHomeDone?'rgba(52,201,123,.45)':'rgba(184,126,247,.3)'};color:${isHomeDone?'var(--green)':'var(--purple)'};font-family:'Cairo',sans-serif;font-size:.68rem;font-weight:700;padding:8px;border-radius:10px;cursor:pointer">${isHomeDone?'✕ إلغاء':'🏠 تم الافتقاد بالمنزل'}</button>
+        <button onclick="toggleNoteBox(${s.id})" style="background:rgba(255,255,255,.05);border:1px solid var(--border);color:var(--muted);font-family:'Cairo',sans-serif;font-size:.7rem;font-weight:700;padding:8px 11px;border-radius:10px;cursor:pointer">📝</button>
+      </div>
+      ${noteOpenFor===s.id?`
+      <div style="display:flex;gap:7px;margin-top:9px">
+        <input id="noteInp-${s.id}" type="text" placeholder="اكتب ملاحظة الافتقاد..."
+          onkeydown="if(event.key==='Enter')saveNote(${s.id})"
+          style="flex:1;background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:'Cairo',sans-serif;font-size:.75rem;padding:9px 12px;border-radius:10px;outline:none"/>
+        <button onclick="saveNote(${s.id})" style="background:var(--green);border:none;color:#fff;font-family:'Cairo',sans-serif;font-size:.72rem;font-weight:800;padding:9px 16px;border-radius:10px;cursor:pointer">حفظ</button>
+      </div>`:''}
+    </div>`;
+  }).join('');
+}
+
+// ═══ قائمة المخدومين ═══
+function studentRow(s, i, showClass){
+  const idx = STUDENTS.indexOf(s);
+  return `
+  <div onclick="openStudentCard(${idx})" style="background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:11px 13px;margin-bottom:8px;display:flex;align-items:center;gap:10px;cursor:pointer">
+    <div style="width:38px;height:38px;border-radius:50%;background:${SCOLORS[i%SCOLORS.length]};display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;flex-shrink:0">${ini(s.name)}</div>
+    <div style="flex:1;min-width:0">
+      <div style="font-weight:700;font-size:.84rem;unicode-bidi:plaintext">${s.name}</div>
+      ${showClass?`<div style="font-size:.62rem;color:var(--muted)">${s.grade} ثانوي • ${s.gender==='ولد'?'بنين':'بنات'}</div>`:''}
+    </div>
+    ${s.phone
+      ? `<a href="tel:${s.phone}" onclick="event.stopPropagation()" style="display:flex;align-items:center;justify-content:center;width:44px;height:44px;background:rgba(52,201,123,.12);border:1px solid rgba(52,201,123,.3);color:var(--green);border-radius:12px;text-decoration:none;font-size:1.1rem;flex-shrink:0">📞</a>
+         <button onclick="event.stopPropagation();openReminderModal(${s.id})" style="display:flex;align-items:center;justify-content:center;width:44px;height:44px;background:rgba(52,201,123,.12);border:1px solid rgba(52,201,123,.3);color:var(--green);border-radius:12px;flex-shrink:0;cursor:pointer">${WA_SVG_BIG}</button>`
+      : `<span style="font-size:.62rem;color:var(--muted);flex-shrink:0">📵 بدون رقم</span>`}
+  </div>`;
+}
+
+// ═══ كارت تفاصيل المخدوم ═══
+function openStudentCard(idx){
+  const s = STUDENTS[idx];
+  const pctColor = s.pct>=80 ? 'var(--green)' : s.pct>=60 ? 'var(--accent)' : 'var(--red)';
+  document.getElementById('stuModalBody').innerHTML = `
+    <div style="display:flex;flex-direction:column;align-items:center;text-align:center;margin-bottom:16px">
+      <div style="width:64px;height:64px;border-radius:50%;background:${SCOLORS[idx%SCOLORS.length]};display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;color:#fff;margin-bottom:10px">${ini(s.name)}</div>
+      <div style="font-weight:900;font-size:1.05rem;unicode-bidi:plaintext">${s.name}</div>
+      <div style="font-size:.7rem;color:var(--muted);margin-top:3px">${s.grade} ثانوي • ${s.gender==='ولد'?'بنين':'بنات'}</div>
+    </div>
+
+    <div style="margin-bottom:14px">
+      <div style="display:flex;justify-content:space-between;font-size:.74rem;margin-bottom:5px">
+        <span>نسبة الحضور</span><strong style="color:${pctColor}">${s.pct}٪</strong>
+      </div>
+      <div class="bar-track" style="height:10px"><div class="bar-fill" style="width:${s.pct}%;background:${pctColor}"></div></div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px">
+      <div class="stat-card" style="padding:10px"><div class="stat-num" style="font-size:1.15rem;color:var(--accent)">${s.pts} ⭐</div><div class="stat-lbl">رصيد النقاط</div></div>
+      <div class="stat-card" style="padding:10px"><div class="stat-num" style="font-size:1.05rem;color:var(--blue)">${s.lastAtt}</div><div class="stat-lbl">آخر حضور</div></div>
+    </div>
+
+    ${s.lastNote
+      ? `<div style="font-size:.74rem;background:rgba(126,184,247,.07);border-right:2px solid var(--blue);border-radius:0 9px 9px 0;padding:9px 12px;margin-bottom:14px">📝 <strong>آخر ملاحظة:</strong> ${s.lastNote}</div>`
+      : `<div style="font-size:.7rem;color:var(--muted);text-align:center;margin-bottom:14px">لا توجد ملاحظات افتقاد</div>`}
+
+    ${s.phone
+      ? `<div style="display:flex;gap:9px;margin-bottom:10px">
+          <a href="tel:${s.phone}" class="act-btn" style="padding:13px;font-size:.85rem">📞 اتصال</a>
+          <button onclick="openReminderModal(${s.id})" class="act-btn" style="padding:13px;font-size:.85rem">${WA_SVG_BIG} واتساب</button>
+        </div>`
+      : `<div style="text-align:center;background:rgba(255,255,255,.04);border:1px dashed var(--border);color:var(--muted);font-size:.72rem;padding:11px;border-radius:10px;margin-bottom:10px">📵 لا يوجد رقم تليفون مسجّل</div>`}
+
+    ${(s.father_phone || s.mother_phone) ? `
+    <div style="display:flex;flex-direction:column;gap:7px;margin-bottom:14px">
+      ${s.father_phone ? `
+        <div style="display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:10px;padding:9px 12px">
+          <span style="font-size:.74rem;color:var(--muted)">👨 رقم الأب</span>
+          <div style="display:flex;gap:6px">
+            <a href="tel:${s.father_phone}" style="display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;background:rgba(126,184,247,.12);color:var(--blue);text-decoration:none;font-size:.85rem">📞</a>
+            <a href="https://wa.me/2${s.father_phone}" target="_blank" style="display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;background:rgba(52,201,123,.12);color:var(--green);text-decoration:none">${WA_SVG}</a>
+          </div>
+        </div>` : ''}
+      ${s.mother_phone ? `
+        <div style="display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:10px;padding:9px 12px">
+          <span style="font-size:.74rem;color:var(--muted)">👩 رقم الأم</span>
+          <div style="display:flex;gap:6px">
+            <a href="tel:${s.mother_phone}" style="display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;background:rgba(126,184,247,.12);color:var(--blue);text-decoration:none;font-size:.85rem">📞</a>
+            <a href="https://wa.me/2${s.mother_phone}" target="_blank" style="display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;background:rgba(52,201,123,.12);color:var(--green);text-decoration:none">${WA_SVG}</a>
+          </div>
+        </div>` : ''}
+    </div>` : ''}
+    <button onclick="closeStudentCard();openEditModal(${idx})" style="width:100%;background:rgba(126,184,247,.1);border:1px solid rgba(126,184,247,.25);color:var(--blue);font-family:'Cairo',sans-serif;font-size:.78rem;font-weight:700;padding:11px;border-radius:11px;cursor:pointer;margin-top:10px">✏️ تعديل البيانات</button>
+  `;
+  document.getElementById('stuModal').style.display = 'flex';
+}
+function closeStudentCard(){ document.getElementById('stuModal').style.display = 'none'; }
+
+// ═══ REMINDER MODAL ═══
+let remStudentIdx = null;
+
+function getFirstName(name){ return (name||'').trim().split(/\s+/)[0]; }
+
+// ═══ بنك آيات تشجيع للامتحانات (٣ ثانوي بس) ═══
+const EXAM_VERSES = [
+  { ref:'يشوع ١: ٩',      text:'تَشَدَّدْ وَتَشَجَّعْ... لأَنَّ الرَّبَّ إِلَهَكَ مَعَكَ حَيْثُمَا تَذْهَبُ' },
+  { ref:'فيلبي ٤: ١٣',     text:'أَسْتَطِيعُ كُلَّ شَيْءٍ فِي الْمَسِيحِ الَّذِي يُقَوِّيني' },
+  { ref:'إشعياء ٤١: ١٠',   text:'لاَ تَخَفْ لأَنِّي مَعَكَ... هأَنَذَا أُعِينُكَ وَأَعْضُدُكَ' },
+  { ref:'مزمور ٢٣: ٤',     text:'لاَ أَخَافُ شَرّاً لأَنَّكَ مَعِي... عَصَاكَ وَعُكَّازُكَ هُمَا يُعَزِّيَانِنِي' },
+  { ref:'إرميا ٢٩: ١١',    text:'أَفْكَارَ سَلاَمٍ لاَ أَفْكَارَ شَرّ... لأُعْطِيَكُمْ آخِرَةً وَرَجَاءً' },
+  { ref:'٢ تيموثاوس ١: ٧', text:'لَمْ يُعْطِنَا اللهُ رُوحَ الْفَشَلِ بَلْ رُوحَ الْقُوَّةِ وَالْمَحَبَّةِ وَالنُّصْحِ' },
+  { ref:'مزمور ٤٦: ١',     text:'اللهُ لَنَا مَلْجَأٌ وَقُوَّةٌ، عَوْنٌ حَاضِرٌ فِي الضِّيقَاتِ وَجَدٌ شَدِيداً' },
+  { ref:'إشعياء ٤٠: ٣١',   text:'الَّذِينَ يَتَرَجَّوْنَ الرَّبَّ يُجَدِّدُونَ قُوَّةً، يَرْفَعُونَ أَجْنِحَةً كَالنُّسُور' },
+  { ref:'فيلبي ٤: ٦-٧',    text:'لاَ تَهْتَمُّوا بِشَيْءٍ بَلْ فِي كُلِّ شَيْءٍ بِالصَّلاَةِ... وَسَلاَمُ اللهِ يَحْفَظُ قُلُوبَكُمْ' },
+  { ref:'مزمور ١٢١: ١-٢',  text:'أَرْفَعُ عَيْنَيَّ إِلَى الْجِبَالِ، مِنْ حَيْثُ يَأْتِي عَوْنِي... مِنْ عِنْدِ الرَّبِّ' },
+  { ref:'رومية ٨: ٣١',     text:'إِنْ كَانَ اللهُ مَعَنَا فَمَنْ يَكُونُ عَلَيْنَا؟' },
+  { ref:'أمثال ٣: ٥-٦',    text:'تَوَكَّلْ عَلَى الرَّبِّ بِكُلِّ قَلْبِكَ... وَهُوَ يُقَوِّمُ سُبُلَكَ' },
+  { ref:'يعقوب ١: ٥',      text:'إِنْ كَانَ أَحَدُكُمْ يَنْقُصُهُ حِكْمَةٌ، فَلْيَطْلُبْ مِنَ اللهِ... وَسَيُعْطَى لَه' },
+  { ref:'مزمور ٥٦: ٣',     text:'يَوْمَ أَخَافُ، أَنَا عَلَيْكَ أَتَوَكَّلُ' },
+  { ref:'إشعياء ٢٦: ٤',    text:'تَوَكَّلُوا عَلَى الرَّبِّ إِلَى الأَبَدِ... لأَنَّ فِي الرَّبِّ صَخْرَ الأَبَدِيَّة' },
+  { ref:'متى ١١: ٢٨',      text:'تَعَالَوْا إِلَيَّ يَا جَمِيعَ الْمُتْعَبِينَ وَالثَّقِيلِي الأَحْمَالِ، وَأَنَا أُرِيحُكُم' },
+  { ref:'١ بطرس ٥: ٧',     text:'مُلْقِينَ كُلَّ هَمِّكُمْ عَلَيْهِ لأَنَّهُ هُوَ يَهْتَمُّ بِكُم' },
+  { ref:'مزمور ٣٤: ٤',     text:'طَلَبْتُ إِلَى الرَّبِّ فَاسْتَجَابَ لِي، وَمِنْ كُلِّ مَخَاوِفِي نَجَّاني' },
+];
+function pickRandomVerse(){ return EXAM_VERSES[Math.floor(Math.random()*EXAM_VERSES.length)]; }
+function isThirdSecondaryServant(){ return gradeMatch2(SERVANT_CLASS.grade) === 'ثالثة'; }
+
+function reminderTemplate(type, name){
+  const firstName = getFirstName(name);
+  if(type==='trip'){
+    return `ازيك يا ${firstName} 😊\nتذكير بخصوص الرحلة — متنساش تكون جاهز في معادك، وكلمنا لو في أي استفسار 🙏`;
+  }
+  if(type==='visit'){
+    return `ازيك يا ${firstName} 😊\nافتقدناك في الأسرة، حابين نسمع أخبارك ونشوفك قريب بإذن ربنا 🙏`;
+  }
+  if(type==='verse'){
+    const v = pickRandomVerse();
+    return `ازيك يا ${firstName} 😊\nربنا يقوّيك ويسندك في الامتحانات 🙏\n\n"${v.text}"\n— ${v.ref}\n\nهو معاك في كل خطوة 🙏`;
+  }
+  return `ازيك يا ${firstName} 😊\n`;
+}
+
+function openReminderModal(studentId){
+  const s = STUDENTS.find(x=>x.id===studentId) || DEMO.find(x=>x.id===studentId);
+  if(!s){ toast('⚠️ مش لاقي بيانات المخدوم'); return; }
+  if(!s.phone){ toast('⚠️ مفيش رقم تليفون مسجّل للمخدوم ده'); return; }
+  remStudentIdx = s.id;
+  document.getElementById('remTargetInfo').textContent = 'المخدوم: ' + s.name + ' — ' + s.phone;
+
+  // نوع الرسالة — متاحة لكل الفصول، بس الافتراضي يختلف حسب فصل الخادم
+  const typeSel = document.getElementById('remType');
+  typeSel.innerHTML =
+    '<option value="trip">🚌 تذكير رحلة</option>' +
+    '<option value="visit">رسالة افتقاد</option>' +
+    '<option value="verse">📖 آية تشجيع (امتحانات)</option>' +
+    '<option value="custom">✏️ رسالة مخصصة</option>';
+  typeSel.value = isThirdSecondaryServant() ? 'verse' : 'visit';
+
+  applyReminderTemplate(s.name);
+  document.getElementById('reminderModal').style.display = 'flex';
+}
+
+function applyReminderTemplate(nameOverride){
+  const type = document.getElementById('remType').value;
+  let name = nameOverride;
+  if(!name){
+    const s = STUDENTS.find(x=>x.id===remStudentIdx) || DEMO.find(x=>x.id===remStudentIdx);
+    name = s ? s.name : '';
+  }
+  document.getElementById('remText').value = reminderTemplate(type, name);
+  document.getElementById('remRerollBtn').style.display = (type==='verse') ? 'block' : 'none';
+}
+
+function closeReminderModal(){
+  document.getElementById('reminderModal').style.display = 'none';
+  remStudentIdx = null;
+}
+
+function sendReminderWA(){
+  const s = STUDENTS.find(x=>x.id===remStudentIdx) || DEMO.find(x=>x.id===remStudentIdx);
+  const phone = s ? s.phone : null;
+  const text  = document.getElementById('remText').value.trim();
+  if(!phone){ toast('مفيش رقم متاح للإرسال'); return; }
+  if(!text){ toast('اكتب نص الرسالة'); return; }
+  const url = 'https://wa.me/2' + phone + '?text=' + encodeURIComponent(text);
+  window.open(url, '_blank');
+  closeReminderModal();
+}
+
+function renderSvStudents(){
+  const q = document.getElementById('svSearch').value.trim();
+  document.getElementById('svSearchX').style.display = q ? 'flex' : 'none';
+  // Normalize grade for comparison
+  function gradeMatch(g){
+    const m={'الأول الثانوي':'أولى','الثاني الثانوي':'ثانية','الثالث الثانوي':'ثالثة'};
+    return m[g]||g;
+  }
+  const sGrade  = gradeMatch(SERVANT_CLASS.grade);
+  const sGender = SERVANT_CLASS.gender; // 'بنت' or 'ولد'
+  const list = STUDENTS
+    .filter(s => s.grade===sGrade && s.gender===sGender)
+    .filter(s => !q || s.name.includes(q));
+  document.getElementById('svStudentsList').innerHTML =
+    list.length ? list.map((s,i)=>studentRow(s,i,false)).join('')
+    : '<div style="text-align:center;color:var(--muted);padding:30px;font-size:.8rem">مفيش نتائج 🔍</div>';
+}
+function clearSvSearch(){
+  document.getElementById('svSearch').value='';
+  renderSvStudents();
+  document.getElementById('svSearch').focus();
+}
+
+function renderAmStudents(){
+  const q = document.getElementById('amSearch').value.trim();
+  document.getElementById('amSearchX').style.display = q ? 'flex' : 'none';
+  const cls = document.getElementById('amClassSel').value;
+  const list = STUDENTS
+    .filter(s => !cls || (s.grade+'-'+s.gender)===cls)
+    .filter(s => !q || s.name.includes(q));
+  document.getElementById('amStudentsList').innerHTML =
+    list.length ? list.map((s,i)=>studentRow(s,i,true)).join('')
+    : '<div style="text-align:center;color:var(--muted);padding:30px;font-size:.8rem">مفيش نتائج 🔍</div>';
+}
+function clearAmSearch(){
+  document.getElementById('amSearch').value='';
+  renderAmStudents();
+  document.getElementById('amSearch').focus();
+}
+
+// ═══ تنزيل Excel (CSV بدعم العربي) ═══
+function exportStudents(view){
+  const rows = view==='servant'
+    ? STUDENTS.filter(s => s.grade===SERVANT_CLASS.grade && s.gender===SERVANT_CLASS.gender)
+    : STUDENTS;
+  const header = 'الاسم,الصف,النوع,التليفون';
+  const body = rows.map(s => `${s.name},${s.grade} ثانوي,${s.gender},${s.phone||'—'}`).join('\n');
+  const csv = '\uFEFF' + header + '\n' + body;
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = view==='servant' ? 'مخدومين-فصلي.csv' : 'كل-المخدومين.csv';
+  a.click();
+  toast('⬇️ الملف اتنزّل');
+}
+
+// ═══ Birthdays rendered by renderSvBdays() ═══
+
+// ═══ Amin weekly filter ═══
+// WK removed — now computed from Supabase
+function renderAminWeek(){
+  const cls = document.getElementById('aminClassFilter').value; // e.g. 'أولى-بنات' or ''
+  // Map filter to grade+gender
+  let fGrade=null, fGender=null;
+  if(cls){
+    const [g, n] = cls.split('-');
+    fGrade = g; fGender = n==='بنات'?'بنت':'ولد';
+  }
+  // Filter students by class
+  const inClass = sid => {
+    if(!cls) return true;
+    const stu = RAW_STUDENTS.find(s=>s.id==sid);
+    return stu && gradeMatch2(stu.grade)===fGrade && stu.gender===fGender;
+  };
+  const weekAgo = new Date(); weekAgo.setDate(weekAgo.getDate()-7);
+  const weekNotes = RAW_FOLLOWNOTES.filter(n =>
+    new Date(n.created_at) >= weekAgo && inClass(n.student_id));
+  const followNotes = weekNotes.filter(n => n.note && n.note.includes('تم الافتقاد'));
+  const phone = followNotes.filter(n => n.note.includes('تليفونياً')).length;
+  const home  = followNotes.filter(n => n.note.includes('بالمنزل')).length;
+  const total = followNotes.length;
+
+  // Returned after follow-up: had a "تم الافتقاد" note, then attended later
+  let back = 0; const backNames = [];
+  const followedStudents = [...new Set(followNotes.map(n=>n.student_id))];
+  followedStudents.forEach(sid => {
+    const noteDate = followNotes.filter(n=>n.student_id==sid).map(n=>n.created_at).sort().pop();
+    const lastAtt = lastAttendedDate(sid);
+    if(lastAtt && new Date(lastAtt) > new Date(noteDate.slice(0,10))){
+      back++;
+      const stu = RAW_STUDENTS.find(s=>s.id==sid);
+      if(stu) backNames.push(stu.name);
+    }
+  });
+  // Still absent after follow-up
+  const warn = DEMO.filter(s => s.warn && inClass(s.id)).length;
+
+  const titleMap = cls ? cls.replace('-',' - ') : 'كل الفصول';
+  document.getElementById('wkTitle').textContent = '📈 ملخص الأسبوع — '+titleMap;
+  document.getElementById('wkTotal').textContent = total;
+  document.getElementById('wkPhone').textContent = phone;
+  document.getElementById('wkHome').textContent  = home;
+  document.getElementById('wkBack').textContent  = back;
+  document.getElementById('wkWarn').textContent  = warn;
+  document.getElementById('wkBackNames').textContent = backNames.length ? backNames.join(' • ') : '—';
+}
+
+
+// ═══ أعياد الميلاد (فصل الخادم) ═══
+function renderSvBdays(){
+  const now = new Date();
+  const month = now.getMonth();
+  const sg = gradeMatch2(SERVANT_CLASS.grade);
+  // Get from STUDENTS that have birthday in current month + servant's class
+  const from_students = STUDENTS
+    .filter(s => s.grade===sg && s.gender===SERVANT_CLASS.gender && s.birthday)
+    .map(s=>{
+      const d = new Date(s.birthday);
+      return {...s, bMonth: d.getMonth(), bDay: d.getDate()};
+    })
+    .filter(s => s.bMonth === month)
+    .sort((a,b) => a.bDay - b.bDay);
+
+  const el = document.getElementById('svBdayList');
+  if(!from_students.length){
+    el.innerHTML = '<div style="text-align:center;padding:40px;color:var(--muted);font-size:.85rem">مفيش أعياد ميلاد في الشهر ده 🎂</div>';
+    return;
+  }
+  el.innerHTML = from_students.map(s=>`
+    <div class="bday-card">
+      <div style="font-size:1.8rem">🎂</div>
+      <div style="flex:1">
+        <div style="font-weight:800;font-size:.88rem;unicode-bidi:plaintext">${s.name}</div>
+        <div style="font-size:.68rem;color:var(--muted)">${s.bDay} ${MONTH_AR[s.bMonth]}</div>
+      </div>
+      ${s.phone ? `<a href="https://wa.me/2${s.phone}" target="_blank"
+        style="display:flex;align-items:center;gap:5px;background:rgba(52,201,123,.12);border:1px solid rgba(52,201,123,.3);
+        color:var(--green);font-size:.7rem;font-weight:700;padding:8px 13px;border-radius:10px;text-decoration:none">
+        ${WA_SVG_BIG} هنّيه</a>` : ''}
+    </div>`).join('');
+}
+
+// ═══ ملخص عام (فصل الخادم) ═══
+function renderSvSummary(){
+  const sg = gradeMatch2(SERVANT_CLASS.grade);
+  const myStudents = STUDENTS.filter(s => s.grade===sg && s.gender===SERVANT_CLASS.gender);
+  const myFollow   = DEMO.filter(s => s.grade===sg && s.gender===SERVANT_CLASS.gender);
+  const avgPct     = myStudents.length ? Math.round(myStudents.reduce((a,s)=>a+(s.pct||0),0)/myStudents.length) : 0;
+  const followed   = myFollow.filter(s=>s.followed).length;
+  const pctColor   = avgPct>=80?'var(--green)':avgPct>=60?'var(--accent)':'var(--red)';
+
+  // ─── حساب "رجعوا بعد الافتقاد" ───
+  const myIds = myStudents.map(s=>s.id);
+  const myNotes = RAW_FOLLOWNOTES.filter(n =>
+    myIds.includes(n.student_id) && n.note && n.note.includes('تم الافتقاد'));
+  const backList = [];
+  [...new Set(myNotes.map(n=>n.student_id))].forEach(sid => {
+    const latestNote = myNotes.filter(n=>n.student_id==sid)
+      .sort((a,b)=>(b.created_at||'').localeCompare(a.created_at||''))[0];
+    const la = lastAttendedDate(sid);
+    if(la && latestNote && new Date(la) > new Date(latestNote.created_at.slice(0,10))){
+      const stu = STUDENTS.find(s=>s.id==sid);
+      if(stu) backList.push(stu);
+    }
+  });
+
+  const top5 = [...myStudents].sort((a,b)=>(b.pts||0)-(a.pts||0)).slice(0,5);
+
+  document.getElementById('sv2Content').innerHTML = `
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-bottom:14px">
+      <div class="stat-card"><div class="stat-num" style="color:var(--blue)">${myStudents.length}</div><div class="stat-lbl">مخدومين الفصل</div></div>
+      <div class="stat-card"><div class="stat-num" style="color:${pctColor}">${avgPct}٪</div><div class="stat-lbl">متوسط الحضور</div></div>
+      <div class="stat-card"><div class="stat-num" style="color:var(--accent)">${followed}</div><div class="stat-lbl">تم افتقادهم الأسبوع ده</div></div>
+      <div class="stat-card"><div class="stat-num" style="color:var(--red)">${myFollow.length}</div><div class="stat-lbl">محتاجين افتقاد</div></div>
+    </div>
+
+    ${backList.length ? `
+    <!-- ═══ بطاقة الاحتفال: مطر + كأس ═══ -->
+    <div class="celebrate-card" id="celebrateCard">
+      <div class="glow-ring"></div>
+      <div class="trophy-big">🏆</div>
+      <div style="font-family:'Tajawal',sans-serif;font-weight:900;font-size:1.1rem;color:var(--green);margin:8px 0 5px;position:relative;z-index:2">
+        ${backList.length === 1 ? 'رجع بعد الافتقاد! 🎉' : `${backList.length} رجعوا بعد الافتقاد! 🎉`}
+      </div>
+      <div style="font-size:.73rem;color:var(--muted);margin-bottom:14px;line-height:1.6;position:relative;z-index:2">
+        ثمرة تعبك في الخدمة — ربنا يبارك فيك 🙏
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;position:relative;z-index:2">
+        ${backList.map((s,i)=>`
+          <div class="back-chip" style="animation-delay:${0.15 + i*0.2}s">
+            <span style="font-size:.85rem">🙌</span>
+            <span>${s.name.split(' ').slice(0,2).join(' ')}</span>
+          </div>`).join('')}
+      </div>
+    </div>` : ''}
+
+    ${top5.length ? `<div class="panel">
+      <div class="sec-title">🏆 أعلى ٥ في الفصل</div>
+      ${top5.map((s,i)=>`<div class="wk-row">
+        <span>${i+1}. ${s.name}</span>
+        <strong style="color:var(--accent)">${s.pts} ⭐</strong>
+      </div>`).join('')}
+    </div>` : ''}`;
+
+  // ─── رشّ قصاصات المطر على بطاقة الاحتفال ───
+  if(backList.length){
+    const card = document.getElementById('celebrateCard');
+    if(card){
+      const cols = ['#34c97b','#7eb8f7','#f5a623','#e8583a','#b87ef7','#ff6b9d'];
+      for(let i=0;i<24;i++){
+        const p = document.createElement('div');
+        p.className = 'confetti-piece';
+        p.style.right = Math.random()*100 + '%';
+        p.style.background = cols[i % cols.length];
+        p.style.animationDuration = (1.8 + Math.random()*1.6) + 's';
+        p.style.animationDelay = (Math.random()*2.4) + 's';
+        if(Math.random()>.5) p.style.borderRadius = '50%';
+        card.appendChild(p);
+      }
+    }
+  }
+}
+
+// ═══ تفاصيل الأنشطة حسب الشهر/الأسبوع ═══
+// ACTS_DATA removed — now computed from Supabase
+
+function renderAminDashboard(){
+  const total = RAW_STUDENTS.length;
+  const avgPct = STUDENTS.length ? Math.round(STUDENTS.reduce((a,s)=>a+s.pct,0)/STUDENTS.length) : 0;
+  const needFollow = DEMO.length;
+  // followed this week = followup_notes with "تم الافتقاد" in last 7 days
+  const weekAgo = new Date(); weekAgo.setDate(weekAgo.getDate()-7);
+  const followedWeek = RAW_FOLLOWNOTES.filter(n =>
+    n.note && n.note.includes('تم الافتقاد') && new Date(n.created_at) >= weekAgo).length;
+
+  const el = id => document.getElementById(id);
+  if(el('amTotalStudents')) el('amTotalStudents').textContent = total;
+  if(el('amAvgPct'))        el('amAvgPct').textContent = avgPct+'٪';
+  if(el('amNeedFollow'))    el('amNeedFollow').textContent = needFollow;
+  if(el('amFollowedWeek'))  el('amFollowedWeek').textContent = followedWeek;
+
+  // Top 5 service-wide
+  const top5 = [...STUDENTS].sort((a,b)=>b.pts-a.pts).slice(0,5);
+  const gLabel = g => g==='ولد'?'بنين':'بنات';
+  if(el('amTop5')){
+    el('amTop5').innerHTML = top5.map((s,i)=>`
+      <div class="wk-row">
+        <span>${i+1}. ${s.name} <span style="color:var(--muted);font-size:.62rem">(${s.grade} ${gLabel(s.gender)})</span></span>
+        <strong style="color:var(--accent)">${s.pts} ⭐</strong>
+      </div>`).join('');
+  }
+
+  // ── الفصول الستة ──
+  const classes = [
+    {grade:'أولى', gender:'بنت', label:'أولى - بنات'},
+    {grade:'أولى', gender:'ولد', label:'أولى - بنين'},
+    {grade:'ثانية',gender:'بنت', label:'ثانية - بنات'},
+    {grade:'ثانية',gender:'ولد', label:'ثانية - بنين'},
+    {grade:'ثالثة',gender:'بنت', label:'ثالثة - بنات'},
+    {grade:'ثالثة',gender:'ولد', label:'ثالثة - بنين'},
+  ];
+  const weekAgo2 = new Date(); weekAgo2.setDate(weekAgo2.getDate()-7);
+
+  function classStats(cl){
+    const studs = RAW_STUDENTS.filter(s => gradeMatch2(s.grade)===cl.grade && genderMatch(s.gender)===cl.gender);
+    const ids = studs.map(s=>s.id);
+    const need = DEMO.filter(s => s.grade===cl.grade && s.gender===cl.gender).length;
+    const followed = RAW_FOLLOWNOTES.filter(n => ids.includes(n.student_id) && n.note && n.note.includes('تم الافتقاد') && new Date(n.created_at)>=weekAgo2).length;
+    // رجعوا: عندهم note "تم الافتقاد" وبعدها حضروا
+    let back = 0;
+    [...new Set(RAW_FOLLOWNOTES.filter(n=>ids.includes(n.student_id) && n.note && n.note.includes('تم الافتقاد')).map(n=>n.student_id))].forEach(sid=>{
+      const noteDate = RAW_FOLLOWNOTES.filter(n=>n.student_id==sid && n.note.includes('تم الافتقاد')).map(n=>n.created_at).sort().pop();
+      const la = lastAttendedDate(sid);
+      if(la && noteDate && new Date(la) > new Date(noteDate.slice(0,10))) back++;
+    });
+    const pcts = studs.map(s=>calcPct(s.id));
+    const avgPct = pcts.length ? Math.round(pcts.reduce((a,b)=>a+b,0)/pcts.length) : 0;
+    return {count:studs.length, need, followed, back, avgPct};
+  }
+
+  // حالة الفصول table
+  if(el('classStatusBody')){
+    el('classStatusBody').innerHTML = classes.map(cl=>{
+      const st = classStats(cl);
+      return `<tr>
+        <td>${cl.label}</td>
+        <td style="color:${st.need?'var(--red)':'var(--muted)'};font-weight:800">${st.need}</td>
+        <td>${st.followed}</td>
+        <td style="color:${st.back?'var(--green)':'var(--muted)'}">${st.back}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  // اتجاه الحضور — آخر ٤ جلسات أسرة
+  if(el('trendPanel')){
+    const osraDates = osraSessions().slice(0,4).reverse(); // أقدم لأحدث
+    if(osraDates.length){
+      const bars = osraDates.map((d,i)=>{
+        const present = RAW_ATTENDANCE.filter(a=>a.activity==='osra' && a.session_date===d).length;
+        const pct = RAW_STUDENTS.length ? Math.round(present/RAW_STUDENTS.length*100) : 0;
+        const col = pct>=75?'var(--green)':pct>=50?'var(--accent)':'var(--red)';
+        return `<div class="bar-row"><div class="bar-top"><span>${fmtDateAr(d)}</span><span>${pct}٪</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${col}"></div></div></div>`;
+      }).join('');
+      el('trendPanel').innerHTML = `<div class="sec-title">📉 اتجاه حضور الأسرة</div>${bars}`;
+    } else {
+      el('trendPanel').innerHTML = '';
+    }
+  }
+
+  // مقارنة الفصول — نسبة الحضور
+  if(el('classComparePanel')){
+    const withPct = classes.map(cl=>({...cl, ...classStats(cl)})).filter(c=>c.count>0).sort((a,b)=>b.avgPct-a.avgPct);
+    el('classComparePanel').innerHTML = withPct.length ? `<div class="sec-title">⚖️ مقارنة الفصول — نسبة الحضور</div>${
+      withPct.map((cl,i)=>{
+        const col = cl.avgPct>=75?'var(--green)':cl.avgPct>=55?'var(--blue)':'var(--red)';
+        const medal = i===0?' 🥇':'';
+        return `<div class="bar-row"><div class="bar-top"><span>${cl.label}${medal}</span><span>${cl.avgPct}٪</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:${cl.avgPct}%;background:${col}"></div></div></div>`;
+      }).join('')}` : '';
+  }
+
+  // فصول محتاجة دعم
+  if(el('supportNeededPanel')){
+    const withStats = classes.map(cl=>({...cl, ...classStats(cl)})).filter(c=>c.count>0);
+    const needSupport = withStats.filter(c => c.avgPct < 60 || c.need >= 4)
+      .sort((a,b)=>a.avgPct-b.avgPct);
+    if(needSupport.length){
+      el('supportNeededPanel').innerHTML = `<div class="panel" style="border-color:rgba(232,69,69,.3)">
+        <div class="sec-title" style="color:var(--red)">🚨 فصول محتاجة دعم</div>
+        ${needSupport.map(cl=>{
+          const reason = cl.avgPct<60 ? `نسبة حضور ${cl.avgPct}٪` : `${cl.need} محتاجين افتقاد`;
+          const bc = cl.avgPct<60 ? 'var(--red)' : 'var(--accent)';
+          const bg = cl.avgPct<60 ? 'rgba(232,69,69,.06)' : 'rgba(245,166,35,.06)';
+          return `<div style="font-size:.74rem;line-height:1.7;background:${bg};border-right:3px solid ${bc};border-radius:0 9px 9px 0;padding:9px 12px;margin-bottom:8px">
+            <strong>${cl.label}</strong> — ${reason}</div>`;
+        }).join('')}
+      </div>`;
+    } else {
+      el('supportNeededPanel').innerHTML = '';
+    }
+  }
+
+  // أنشط الخدام في الافتقاد
+  if(el('activeServantsBody')){
+    const counts = {};
+    RAW_FOLLOWNOTES.filter(n => n.note && n.note.includes('تم الافتقاد') && n.servant_name).forEach(n=>{
+      counts[n.servant_name] = (counts[n.servant_name]||0)+1;
+    });
+    const ranked = Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,5);
+    el('activeServantsBody').innerHTML = ranked.length
+      ? ranked.map(([name,cnt])=>`<div class="wk-row"><span>م/ ${name}</span><strong style="color:var(--accent)">${cnt} افتقاد</strong></div>`).join('')
+      : '<div style="text-align:center;color:var(--muted);padding:14px;font-size:.78rem">لسه مفيش افتقادات مسجّلة</div>';
+  }
+}
+
+function renderAminActs(){
+  const week  = document.getElementById('actWeek').value;
+  const monthV = document.getElementById('actMonth').value; // '' or month index
+  // Filter attendance by month/week
+  let rows = RAW_ATTENDANCE.slice();
+  if(monthV !== ''){
+    const mi = parseInt(monthV);
+    rows = rows.filter(a => new Date(a.session_date).getMonth() === mi);
+  }
+  if(week){
+    const w = parseInt(week);
+    rows = rows.filter(a => {
+      const d = new Date(a.session_date).getDate();
+      const wk = Math.min(4, Math.ceil(d/7));
+      return wk === w;
+    });
+  }
+  // Count per activity
+  const counts = {};
+  ACTIVITIES.forEach(ac => counts[ac.key] = 0);
+  rows.forEach(a => { if(counts[a.activity]!==undefined) counts[a.activity]++; });
+  const maxCount = Math.max(1, ...Object.values(counts));
+  const colors = {osra:'var(--accent)',mahragan:'var(--green)',qodas:'var(--purple)',ktab:'var(--blue)',qebti:'#4fc3f7',alhan:'#ff6b9d',mahfouzat:'#81c784',egtmaia:'#ffb347',masabqa:'#e84545'};
+
+  const wkLabels = {'':'كل الأسابيع','1':'الأسبوع الأول','2':'الأسبوع الثاني','3':'الأسبوع الثالث','4':'الأسبوع الرابع'};
+  const monthLabel = monthV==='' ? 'كل الشهور' : MONTH_AR[parseInt(monthV)];
+  const title = monthLabel + ' — ' + wkLabels[week];
+
+  const sorted = ACTIVITIES
+    .map(ac => ({...ac, count: counts[ac.key]}))
+    .filter(ac => ac.count > 0)
+    .sort((a,b) => b.count - a.count);
+
+  document.getElementById('actsContent').innerHTML = `
+    <div class="sec-title" style="margin-bottom:12px">🏃 ${title}</div>
+    ${sorted.length ? `<div class="panel">${sorted.map(ac=>`
+      <div class="bar-row">
+        <div class="bar-top"><span>${ac.icon} ${ac.label}</span><span>${ac.count} حضور</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width:${Math.round(ac.count/maxCount*100)}%;background:${colors[ac.key]||'var(--accent)'}"></div></div>
+      </div>`).join('')}
+    </div>` : '<div style="text-align:center;padding:40px;color:var(--muted);font-size:.85rem">مفيش حضور مسجّل في الفترة دي</div>'}`;
+}
+
+// ═══ أعياد الميلاد (أمين) ═══
+// ALL_BDAYS removed — now computed from Supabase
+
+function renderAminBdays(){
+  const month = parseInt(document.getElementById('bdayMonthFilter').value);
+  // Combine STUDENTS (with birthday field) + static ALL_BDAYS
+  const fromStudents = STUDENTS
+    .filter(s => s.birthday)
+    .map(s => {
+      const d = new Date(s.birthday);
+      return {name:s.name, month:d.getMonth(), day:d.getDate(), grade:s.grade, gender:s.gender, phone:s.phone};
+    });
+  const list = fromStudents.filter(b=>b.month===month).sort((a,b)=>a.day-b.day);
+  document.getElementById('aminBdayList').innerHTML = list.length
+    ? list.map(b=>`
+      <div class="bday-card">
+        <div style="font-size:1.8rem">🎂</div>
+        <div style="flex:1">
+          <div style="font-weight:800;font-size:.88rem;unicode-bidi:plaintext">${b.name}</div>
+          <div style="font-size:.68rem;color:var(--muted)">${b.day} ${MONTH_AR[b.month]} • ${b.grade} ثانوي • ${b.gender==='ولد'?'بنين':'بنات'}</div>
+        </div>
+        ${b.phone
+          ? `<a href="https://wa.me/2${b.phone}" target="_blank" style="display:flex;align-items:center;gap:5px;background:rgba(52,201,123,.12);border:1px solid rgba(52,201,123,.3);color:var(--green);font-size:.7rem;font-weight:700;padding:8px 13px;border-radius:10px;text-decoration:none">${WA_SVG_BIG} هنّيه</a>`
+          : ''}
+      </div>`).join('')
+    : '<div style="text-align:center;padding:40px;color:var(--muted);font-size:.85rem">مفيش أعياد ميلاد في الشهر ده 🎂</div>';
+}
+
+// ═══ إضافة/تعديل بيانات مخدوم ═══
+let editIdx = -1;
+
+function openEditModal(idx){
+  editIdx = idx;
+  const s = idx >= 0 ? STUDENTS[idx] : null;
+  document.getElementById('editName').value   = s ? s.name   : '';
+  document.getElementById('editGrade').value  = s ? s.grade  : 'أولى';
+  document.getElementById('editGender').value = s ? s.gender : 'بنت';
+  document.getElementById('editPhone').value    = s ? (s.phone||'') : '';
+  document.getElementById('editFatherPhone').value = s ? (s.father_phone||'') : '';
+  document.getElementById('editMotherPhone').value = s ? (s.mother_phone||'') : '';
+  document.getElementById('editBirthday').value = s ? (s.birthday||'') : '';
+  document.getElementById('editModalTitle').textContent = s ? '✏️ تعديل بيانات المخدوم' : '➕ إضافة مخدوم جديد';
+  document.getElementById('editModal').style.display = 'flex';
+}
+
+function closeEditModal(){
+  document.getElementById('editModal').style.display = 'none';
+}
+
+async function saveEdit(){
+  const name   = document.getElementById('editName').value.trim();
+  const gradeS = document.getElementById('editGrade').value;  // أولى/ثانية/ثالثة
+  const gender = document.getElementById('editGender').value;
+  const phone    = document.getElementById('editPhone').value.trim() || null;
+  const fatherPhone = document.getElementById('editFatherPhone').value.trim() || null;
+  const motherPhone = document.getElementById('editMotherPhone').value.trim() || null;
+  const birthday = document.getElementById('editBirthday').value || null;
+  if(!name){ toast('⚠️ اكتب اسم المخدوم'); return; }
+  if(editIdx < 0 && name.trim().split(/\s+/).length < 3){ toast('⚠️ الاسم لازم يكون ثلاثي كامل (اسم + اسم الأب + اسم العيلة)'); return; }
+  if(editIdx < 0 && STUDENTS.some(s => s.name.trim() === name)){
+    toast('⚠️ الاسم ده موجود بالفعل في النظام'); return;
+  }
+  // Convert short grade → full grade for DB
+  const gradeMap = {'أولى':'الأول الثانوي','ثانية':'الثاني الثانوي','ثالثة':'الثالث الثانوي'};
+  const grade = gradeMap[gradeS] || gradeS;
+
+  try{
+    if(editIdx >= 0){
+      // UPDATE existing student
+      const sid = STUDENTS[editIdx].id;
+      await fetch(SB_URL+'/rest/v1/students?id=eq.'+sid,{
+        method:'PATCH',
+        headers:{...HDR,'Prefer':'return=minimal'},
+        body: JSON.stringify({name, grade, gender, phone, father_phone:fatherPhone, mother_phone:motherPhone, birthday})
+      });
+      toast('✅ اتحدثت بيانات '+name);
+    } else {
+      // INSERT new student — generate code
+      const code = 'YM-' + String(Date.now()).slice(-5);
+      await fetch(SB_URL+'/rest/v1/students',{
+        method:'POST',
+        headers:{...HDR,'Prefer':'return=minimal'},
+        body: JSON.stringify({name, grade, gender, phone, father_phone:fatherPhone, mother_phone:motherPhone, birthday, code})
+      });
+      toast('✅ اتضاف: '+name);
+    }
+    closeEditModal();
+    await loadAllData();  // reload everything fresh
+  }catch(e){
+    toast('⚠️ مش قادر أحفظ — اتأكد من النت');
+    console.error(e);
+  }
+}
+
+// ─── Init: load servants from Supabase first, then decide ───
+(async function init(){
+  // ?reset in URL clears the saved servant (for testing or switching servant)
+  if(location.search.includes('reset')){
+    localStorage.removeItem('eftqad_servant');
+  }
+  await loadServants();  // fill SERVANT_CLASSES from DB
+  // الباسورد مطلوب كل مرة — بس الفصل/الاسم محفوظ
+  document.getElementById('loginScreen').style.display = 'flex';
+})();
+</script>
+</body>
+</html>
