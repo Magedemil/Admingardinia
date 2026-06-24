@@ -339,12 +339,12 @@ input[type="date"]{color-scheme:dark}
       </div>
     </div>
     <button onclick="exportBackup()"
-      style="width:100%;margin-bottom:14px;display:flex;align-items:center;justify-content:center;gap:8px;
-      background:linear-gradient(135deg,rgba(52,201,123,.15),rgba(52,201,123,.05));
-      border:1px solid rgba(52,201,123,.35);border-radius:14px;padding:13px;cursor:pointer;
-      font-family:'Cairo',sans-serif;color:var(--green);font-size:.88rem;font-weight:800">
-      <span style="font-size:1.1rem">💾</span>
-      <span id="backupBtnLabel">تحميل Backup — كل الجداول (Excel)</span>
+      style="width:100%;margin-bottom:10px;display:flex;align-items:center;justify-content:center;gap:6px;
+      background:linear-gradient(135deg,rgba(52,201,123,.12),rgba(52,201,123,.04));
+      border:1px solid rgba(52,201,123,.3);border-radius:11px;padding:8px;cursor:pointer;
+      font-family:'Cairo',sans-serif;color:var(--green);font-size:.74rem;font-weight:700">
+      <span style="font-size:.92rem">💾</span>
+      <span id="backupBtnLabel">Backup (Excel)</span>
     </button>
     <div id="backupNextInfo" style="display:none;text-align:center;font-size:.66rem;color:var(--muted);margin-top:-10px;margin-bottom:12px"></div>
     <div style="display:flex;gap:8px;margin-bottom:12px;align-items:center">
@@ -354,7 +354,6 @@ input[type="date"]{color-scheme:dark}
         <span id="amSearchX" onclick="clearAmSearch()" style="display:none;position:absolute;left:10px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:12px;color:var(--muted);background:rgba(255,255,255,.1);border-radius:50%;width:20px;height:20px;align-items:center;justify-content:center;font-weight:800">✕</span>
       </div>
       <button onclick="openEditModal(-1)" style="background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;color:#fff;font-family:'Cairo',sans-serif;font-size:.72rem;font-weight:700;padding:10px 13px;border-radius:11px;cursor:pointer;white-space:nowrap">+ مخدوم</button>
-      <button onclick="exportStudents('amin')" style="background:rgba(52,201,123,.12);border:1px solid rgba(52,201,123,.3);color:var(--green);font-family:'Cairo',sans-serif;font-size:.72rem;font-weight:700;padding:10px 13px;border-radius:11px;cursor:pointer;white-space:nowrap">⬇️ Excel</button>
     </div>
     <select id="amClassSel" onchange="renderAmStudents()" style="width:100%;margin-bottom:12px">
       <option value="">كل الفصول</option>
@@ -365,7 +364,7 @@ input[type="date"]{color-scheme:dark}
       <option value="ثالثة-بنت">ثالثة ثانوي - بنات</option>
       <option value="ثالثة-ولد">ثالثة ثانوي - بنين</option>
     </select>
-    <div id="amStudentsList" style="max-height:60vh;overflow-y:auto;-webkit-overflow-scrolling:touch"></div>
+    <div id="amStudentsList" style="max-height:70vh;overflow-y:auto;-webkit-overflow-scrolling:touch"></div>
   </div>
 
   <!-- ══════════════ av5: المتجر ══════════════ -->
