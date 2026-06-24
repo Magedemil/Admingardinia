@@ -507,6 +507,14 @@ input[type="date"]{color-scheme:dark}
         <div style="font-size:.72rem;color:var(--muted);margin-bottom:5px">تاريخ الميلاد 🎂</div>
         <input id="editBirthday" type="date" style="width:100%;padding:10px 13px;direction:ltr"/>
       </div>
+      <div>
+        <div style="font-size:.72rem;color:var(--muted);margin-bottom:5px">📍 العنوان (اختياري)</div>
+        <input id="editAddress" type="text" placeholder="مثال: شارع X، جاردنيا، أمام Y" style="width:100%;padding:10px 13px;direction:rtl"/>
+        <button onclick="pinGPSLocation()" id="gpsPinBtn" style="width:100%;margin-top:7px;background:rgba(126,184,247,.1);
+          border:1px solid rgba(126,184,247,.3);color:var(--blue);font-family:'Cairo',sans-serif;font-size:.74rem;
+          font-weight:700;padding:9px;border-radius:10px;cursor:pointer">📌 ثبّت موقعي هنا (لازم تكون واقف قدام البيت)</button>
+        <div id="gpsPinStatus" style="font-size:.66rem;color:var(--green);margin-top:5px;display:none"></div>
+      </div>
     </div>
 
     <div style="display:flex;gap:8px;margin-top:16px">
@@ -662,6 +670,9 @@ function computeData(){
       father_phone: s.father_phone || null,
       mother_phone: s.mother_phone || null,
       birthday: s.birthday || null,
+      address: s.address || null,
+      lat: s.lat || null,
+      lng: s.lng || null,
       pct: calcPct(s.id),
       pts: calcNetPts(s.id),
       lastAtt: lastAtt ? fmtDateAr(lastAtt) : 'لم يحضر',
@@ -1291,6 +1302,17 @@ function renderFu(){
 }
 
 // ═══ قائمة المخدومين ═══
+function mapsUrlFor(s){
+  // GPS مثبّت له الأولوية (أدق)، وإلا نستخدم العنوان النصي
+  if(s.lat && s.lng){
+    return `https://www.google.com/maps/search/?api=1&query=${s.lat},${s.lng}`;
+  }
+  if(s.address){
+    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(s.address)}`;
+  }
+  return null;
+}
+
 function studentRow(s, i, showClass, showStats){
   const idx = STUDENTS.indexOf(s);
   const pctColor = s.pct>=80?'var(--green)':s.pct>=60?'var(--accent)':'var(--red)';
@@ -1309,6 +1331,9 @@ function studentRow(s, i, showClass, showStats){
       ? `<a href="tel:${s.phone}" onclick="event.stopPropagation()" style="display:flex;align-items:center;justify-content:center;width:44px;height:44px;background:rgba(52,201,123,.12);border:1px solid rgba(52,201,123,.3);color:var(--green);border-radius:12px;text-decoration:none;font-size:1.1rem;flex-shrink:0">📞</a>
          <button onclick="event.stopPropagation();openReminderModal(${s.id})" style="display:flex;align-items:center;justify-content:center;width:44px;height:44px;background:rgba(52,201,123,.12);border:1px solid rgba(52,201,123,.3);color:var(--green);border-radius:12px;flex-shrink:0;cursor:pointer">${WA_SVG_BIG}</button>`
       : `<span style="font-size:.62rem;color:var(--muted);flex-shrink:0">📵 بدون رقم</span>`}
+    ${mapsUrlFor(s)
+      ? `<a href="${mapsUrlFor(s)}" target="_blank" onclick="event.stopPropagation()" title="${s.lat?'موقع GPS دقيق':'بحث بالعنوان'}" style="display:flex;align-items:center;justify-content:center;width:44px;height:44px;background:rgba(126,184,247,.12);border:1px solid rgba(126,184,247,.3);color:var(--blue);border-radius:12px;text-decoration:none;font-size:1.1rem;flex-shrink:0">📍</a>`
+      : ''}
   </div>`;
 }
 
@@ -1932,6 +1957,7 @@ function renderAminBdays(){
 
 // ═══ إضافة/تعديل بيانات مخدوم ═══
 let editIdx = -1;
+let pinnedLat = null, pinnedLng = null;
 
 function openEditModal(idx){
   editIdx = idx;
@@ -1943,8 +1969,43 @@ function openEditModal(idx){
   document.getElementById('editFatherPhone').value = s ? (s.father_phone||'') : '';
   document.getElementById('editMotherPhone').value = s ? (s.mother_phone||'') : '';
   document.getElementById('editBirthday').value = s ? (s.birthday||'') : '';
+  document.getElementById('editAddress').value  = s ? (s.address||'') : '';
+  pinnedLat = s ? (s.lat||null) : null;
+  pinnedLng = s ? (s.lng||null) : null;
+  const gpsStatus = document.getElementById('gpsPinStatus');
+  if(pinnedLat && pinnedLng){
+    gpsStatus.style.display = 'block';
+    gpsStatus.textContent = '📌 فيه موقع GPS محفوظ بالفعل لهذا المخدوم';
+  } else {
+    gpsStatus.style.display = 'none';
+    gpsStatus.textContent = '';
+  }
   document.getElementById('editModalTitle').textContent = s ? '✏️ تعديل بيانات المخدوم' : '➕ إضافة مخدوم جديد';
   document.getElementById('editModal').style.display = 'flex';
+}
+
+function pinGPSLocation(){
+  if(!navigator.geolocation){
+    toast('⚠️ المتصفح ده مايدعمش تحديد الموقع'); return;
+  }
+  const statusEl = document.getElementById('gpsPinStatus');
+  statusEl.style.display = 'block';
+  statusEl.style.color = 'var(--blue)';
+  statusEl.textContent = '⏳ بنحدد موقعك...';
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      pinnedLat = pos.coords.latitude;
+      pinnedLng = pos.coords.longitude;
+      statusEl.style.color = 'var(--green)';
+      statusEl.textContent = '✅ تم تثبيت الموقع! هيتحفظ لما تدوس "حفظ"';
+    },
+    err => {
+      statusEl.style.color = 'var(--red)';
+      statusEl.textContent = '⚠️ مش قادرين نحدد موقعك — تأكد من تفعيل صلاحية الموقع';
+      console.warn('GPS error:', err);
+    },
+    { enableHighAccuracy:true, timeout:10000 }
+  );
 }
 
 function closeEditModal(){
@@ -1959,6 +2020,7 @@ async function saveEdit(){
   const fatherPhone = document.getElementById('editFatherPhone').value.trim() || null;
   const motherPhone = document.getElementById('editMotherPhone').value.trim() || null;
   const birthday = document.getElementById('editBirthday').value || null;
+  const address  = document.getElementById('editAddress').value.trim() || null;
   if(!name){ toast('⚠️ اكتب اسم المخدوم'); return; }
   if(editIdx < 0 && name.trim().split(/\s+/).length < 3){ toast('⚠️ الاسم لازم يكون ثلاثي كامل (اسم + اسم الأب + اسم العيلة)'); return; }
   if(editIdx < 0 && STUDENTS.some(s => s.name.trim() === name)){
@@ -1975,7 +2037,7 @@ async function saveEdit(){
       await fetch(SB_URL+'/rest/v1/students?id=eq.'+sid,{
         method:'PATCH',
         headers:{...HDR,'Prefer':'return=minimal'},
-        body: JSON.stringify({name, grade, gender, phone, father_phone:fatherPhone, mother_phone:motherPhone, birthday})
+        body: JSON.stringify({name, grade, gender, phone, father_phone:fatherPhone, mother_phone:motherPhone, birthday, address, lat:pinnedLat, lng:pinnedLng})
       });
       toast('✅ اتحدثت بيانات '+name);
     } else {
@@ -1984,7 +2046,7 @@ async function saveEdit(){
       await fetch(SB_URL+'/rest/v1/students',{
         method:'POST',
         headers:{...HDR,'Prefer':'return=minimal'},
-        body: JSON.stringify({name, grade, gender, phone, father_phone:fatherPhone, mother_phone:motherPhone, birthday, code})
+        body: JSON.stringify({name, grade, gender, phone, father_phone:fatherPhone, mother_phone:motherPhone, birthday, code, address, lat:pinnedLat, lng:pinnedLng})
       });
       toast('✅ اتضاف: '+name);
     }
