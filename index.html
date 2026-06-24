@@ -283,9 +283,16 @@ input[type="date"]{color-scheme:dark}
       <div class="wk-row"><span style="color:var(--green)">رجعوا بعد الافتقاد 🎉</span><strong style="color:var(--green)" id="wkBack">٤</strong></div>
       <div class="wk-row"><span style="color:var(--red)">اتفقدوا ومرجعوش ⚠️</span><strong style="color:var(--red)" id="wkWarn">٢</strong></div>
     </div>
-    <div style="background:rgba(52,201,123,.07);border:1px solid rgba(52,201,123,.25);border-radius:12px;padding:12px 14px">
-      <div style="font-weight:800;font-size:.8rem;color:var(--green);margin-bottom:8px">🎉 رجعوا بعد الافتقاد — حسب الفصل</div>
-      <div id="wkBackByClass"></div>
+    <div class="celebrate-card" id="aminCelebrateCard" style="margin-top:14px">
+      <div class="glow-ring"></div>
+      <div class="trophy-big">🏆</div>
+      <div style="font-family:'Tajawal',sans-serif;font-weight:900;font-size:1.05rem;color:var(--green);margin:8px 0 4px;position:relative;z-index:2">
+        🎉 رجعوا بعد الافتقاد
+      </div>
+      <div style="font-size:.7rem;color:var(--muted);margin-bottom:12px;position:relative;z-index:2">
+        ثمرة تعب الخدّام — ربنا يبارك 🙏
+      </div>
+      <div id="wkBackByClass" style="position:relative;z-index:2;text-align:right"></div>
     </div>
   </div>
 
@@ -596,8 +603,10 @@ function totalSessionsAll(){
   return new Set(RAW_ATTENDANCE.map(a=>a.session_date+'|'+a.activity)).size;
 }
 function calcPct(sid){
-  const maxS = totalSessionsAll();
-  const att = RAW_ATTENDANCE.filter(a=>a.student_id==sid).length;
+  // نسبة الحضور محسوبة على الأسرة فقط
+  const osraDates = osraSessions();
+  const maxS = osraDates.length;
+  const att = RAW_ATTENDANCE.filter(a=>a.student_id==sid && a.activity==='osra').length;
   return maxS ? Math.round(att/maxS*100) : 0;
 }
 
@@ -1578,6 +1587,26 @@ function renderAminWeek(){
           <div style="font-size:.72rem;line-height:1.9;color:var(--text);padding-right:4px">${backByClass[clsKey].join(' • ')}</div>
         </div>`).join('')
     : '<div style="font-size:.74rem;color:var(--muted)">مفيش حد رجع بعد الافتقاد الأسبوع ده</div>';
+
+  // ─── مظاهر الاحتفال: رشّ كونفيتي لو فيه راجعين ───
+  const amCard = document.getElementById('aminCelebrateCard');
+  if(amCard){
+    // امسح أي كونفيتي قديم من ريندر سابق
+    amCard.querySelectorAll('.confetti-piece').forEach(p=>p.remove());
+    if(back > 0){
+      const cols = ['#34c97b','#7eb8f7','#f5a623','#e8583a','#b87ef7','#ff6b9d'];
+      for(let i=0;i<24;i++){
+        const p = document.createElement('div');
+        p.className = 'confetti-piece';
+        p.style.right = Math.random()*100 + '%';
+        p.style.background = cols[i % cols.length];
+        p.style.animationDuration = (1.8 + Math.random()*1.6) + 's';
+        p.style.animationDelay = (Math.random()*2.4) + 's';
+        if(Math.random()>.5) p.style.borderRadius = '50%';
+        amCard.appendChild(p);
+      }
+    }
+  }
 }
 
 
