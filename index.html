@@ -284,8 +284,8 @@ input[type="date"]{color-scheme:dark}
       <div class="wk-row"><span style="color:var(--red)">اتفقدوا ومرجعوش ⚠️</span><strong style="color:var(--red)" id="wkWarn">٢</strong></div>
     </div>
     <div style="background:rgba(52,201,123,.07);border:1px solid rgba(52,201,123,.25);border-radius:12px;padding:12px 14px">
-      <div style="font-weight:800;font-size:.8rem;color:var(--green);margin-bottom:8px">🎉 رجعوا بعد الافتقاد</div>
-      <div style="font-size:.75rem;line-height:2" id="wkBackNames">مارك ريمون شكرى • جولى سامح سعد • يارا يوحنا مكين • بيشوى رومانى عدلى</div>
+      <div style="font-weight:800;font-size:.8rem;color:var(--green);margin-bottom:8px">🎉 رجعوا بعد الافتقاد — حسب الفصل</div>
+      <div id="wkBackByClass"></div>
     </div>
   </div>
 
@@ -362,8 +362,10 @@ input[type="date"]{color-scheme:dark}
       <option value="أولى-ولد">أولى ثانوي - بنين</option>
       <option value="ثانية-بنت">ثانية ثانوي - بنات</option>
       <option value="ثانية-ولد">ثانية ثانوي - بنين</option>
+      <option value="ثالثة-بنت">ثالثة ثانوي - بنات</option>
+      <option value="ثالثة-ولد">ثالثة ثانوي - بنين</option>
     </select>
-    <div id="amStudentsList"></div>
+    <div id="amStudentsList" style="max-height:60vh;overflow-y:auto;-webkit-overflow-scrolling:touch"></div>
   </div>
 
   <!-- ══════════════ av5: المتجر ══════════════ -->
@@ -1281,14 +1283,19 @@ function renderFu(){
 }
 
 // ═══ قائمة المخدومين ═══
-function studentRow(s, i, showClass){
+function studentRow(s, i, showClass, showStats){
   const idx = STUDENTS.indexOf(s);
+  const pctColor = s.pct>=80?'var(--green)':s.pct>=60?'var(--accent)':'var(--red)';
   return `
   <div onclick="openStudentCard(${idx})" style="background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:11px 13px;margin-bottom:8px;display:flex;align-items:center;gap:10px;cursor:pointer">
     <div style="width:38px;height:38px;border-radius:50%;background:${SCOLORS[i%SCOLORS.length]};display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;flex-shrink:0">${ini(s.name)}</div>
     <div style="flex:1;min-width:0">
       <div style="font-weight:700;font-size:.84rem;unicode-bidi:plaintext">${s.name}</div>
       ${showClass?`<div style="font-size:.62rem;color:var(--muted)">${s.grade} ثانوي • ${s.gender==='ولد'?'بنين':'بنات'}</div>`:''}
+      ${showStats?`<div style="display:flex;gap:8px;margin-top:4px">
+        <span style="font-size:.6rem;font-weight:700;color:${pctColor};background:${s.pct>=80?'rgba(52,201,123,.12)':s.pct>=60?'rgba(245,166,35,.12)':'rgba(232,69,69,.12)'};padding:2px 7px;border-radius:8px">📊 ${s.pct}%</span>
+        <span style="font-size:.6rem;font-weight:700;color:var(--accent);background:rgba(245,166,35,.12);padding:2px 7px;border-radius:8px">⭐ ${s.pts}</span>
+      </div>`:''}
     </div>
     ${s.phone
       ? `<a href="tel:${s.phone}" onclick="event.stopPropagation()" style="display:flex;align-items:center;justify-content:center;width:44px;height:44px;background:rgba(52,201,123,.12);border:1px solid rgba(52,201,123,.3);color:var(--green);border-radius:12px;text-decoration:none;font-size:1.1rem;flex-shrink:0">📞</a>
@@ -1476,9 +1483,10 @@ function renderAmStudents(){
   const cls = document.getElementById('amClassSel').value;
   const list = STUDENTS
     .filter(s => !cls || (s.grade+'-'+s.gender)===cls)
-    .filter(s => !q || s.name.includes(q));
+    .filter(s => !q || s.name.includes(q))
+    .sort((a,b) => b.pct - a.pct);  // الأعلى حضوراً أولاً
   document.getElementById('amStudentsList').innerHTML =
-    list.length ? list.map((s,i)=>studentRow(s,i,true)).join('')
+    list.length ? list.map((s,i)=>studentRow(s,i,true,true)).join('')
     : '<div style="text-align:center;color:var(--muted);padding:30px;font-size:.8rem">مفيش نتائج 🔍</div>';
 }
 function clearAmSearch(){
@@ -1530,7 +1538,7 @@ function renderAminWeek(){
   const total = followNotes.length;
 
   // Returned after follow-up: had a "تم الافتقاد" note, then attended later
-  let back = 0; const backNames = [];
+  let back = 0; const backByClass = {};
   const followedStudents = [...new Set(followNotes.map(n=>n.student_id))];
   followedStudents.forEach(sid => {
     const noteDate = followNotes.filter(n=>n.student_id==sid).map(n=>n.created_at).sort().pop();
@@ -1538,7 +1546,10 @@ function renderAminWeek(){
     if(lastAtt && new Date(lastAtt) > new Date(noteDate.slice(0,10))){
       back++;
       const stu = RAW_STUDENTS.find(s=>s.id==sid);
-      if(stu) backNames.push(stu.name);
+      if(stu){
+        const clsKey = gradeMatch2(stu.grade) + ' - ' + (genderMatch(stu.gender)==='ولد'?'بنين':'بنات');
+        (backByClass[clsKey] = backByClass[clsKey] || []).push(stu.name);
+      }
     }
   });
   // Still absent after follow-up
@@ -1551,7 +1562,23 @@ function renderAminWeek(){
   document.getElementById('wkHome').textContent  = home;
   document.getElementById('wkBack').textContent  = back;
   document.getElementById('wkWarn').textContent  = warn;
-  document.getElementById('wkBackNames').textContent = backNames.length ? backNames.join(' • ') : '—';
+
+  // ─── عرض الراجعين مقسّمين بالفصل ───
+  const CLASS_ORDER = ['أولى - بنين','أولى - بنات','ثانية - بنين','ثانية - بنات','ثالثة - بنين','ثالثة - بنات'];
+  const orderedClasses = Object.keys(backByClass).sort((a,b)=>{
+    const ia = CLASS_ORDER.indexOf(a), ib = CLASS_ORDER.indexOf(b);
+    return (ia<0?99:ia) - (ib<0?99:ib);
+  });
+  document.getElementById('wkBackByClass').innerHTML = orderedClasses.length
+    ? orderedClasses.map(clsKey => `
+        <div style="margin-bottom:10px">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
+            <span style="font-size:.72rem;font-weight:800;color:var(--green)">${clsKey}</span>
+            <span style="font-size:.6rem;font-weight:700;color:var(--green);background:rgba(52,201,123,.15);padding:1px 7px;border-radius:9px">${backByClass[clsKey].length} 🙌</span>
+          </div>
+          <div style="font-size:.72rem;line-height:1.9;color:var(--text);padding-right:4px">${backByClass[clsKey].join(' • ')}</div>
+        </div>`).join('')
+    : '<div style="font-size:.74rem;color:var(--muted)">مفيش حد رجع بعد الافتقاد الأسبوع ده</div>';
 }
 
 
