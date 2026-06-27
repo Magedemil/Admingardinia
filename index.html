@@ -1696,7 +1696,42 @@ function renderSvSummary(){
 
   const top5 = [...myStudents].sort((a,b)=>(b.pts||0)-(a.pts||0)).slice(0,5);
 
+  // ─── هدف الأسبوع: ٢ زيارة منزلية ───
+  const WEEKLY_HOME_TARGET = 2;
+  const weekAgo7 = new Date(); weekAgo7.setDate(weekAgo7.getDate()-7);
+  const homeVisitsThisWeek = RAW_FOLLOWNOTES.filter(n =>
+    myIds.includes(n.student_id) && n.note && n.note.includes('بالمنزل') &&
+    new Date(n.created_at) >= weekAgo7
+  ).length;
+  const targetReached = homeVisitsThisWeek >= WEEKLY_HOME_TARGET;
+  const targetPct = Math.min(100, Math.round(homeVisitsThisWeek/WEEKLY_HOME_TARGET*100));
+
   document.getElementById('sv2Content').innerHTML = `
+    ${targetReached ? `
+    <!-- ═══ احتفال: هدف زيارات الأسبوع ═══ -->
+    <div class="celebrate-card" id="homeTargetCard">
+      <div class="glow-ring"></div>
+      <div class="trophy-big">🎯</div>
+      <div style="font-family:'Tajawal',sans-serif;font-weight:900;font-size:1.1rem;color:var(--purple);margin:8px 0 5px;position:relative;z-index:2">
+        خلصت هدف الأسبوع! 🏠
+      </div>
+      <div style="font-size:.73rem;color:var(--muted);margin-bottom:6px;line-height:1.6;position:relative;z-index:2">
+        ${homeVisitsThisWeek} زيارة منزلية هذا الأسبوع — تستاهل التحية يا خادم 🙌
+      </div>
+    </div>
+    ` : `
+    <!-- ═══ شريط تقدّم: هدف زيارات الأسبوع ═══ -->
+    <div style="background:rgba(184,126,247,.08);border:1px solid rgba(184,126,247,.3);border-radius:14px;padding:13px 15px;margin-bottom:12px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px">
+        <span style="font-size:.78rem;font-weight:800;color:var(--purple)">🏠 هدف زيارات الأسبوع</span>
+        <span style="font-size:.76rem;font-weight:800;color:var(--purple)">${homeVisitsThisWeek} / ${WEEKLY_HOME_TARGET}</span>
+      </div>
+      <div style="background:rgba(184,126,247,.15);border-radius:8px;height:8px;overflow:hidden">
+        <div style="background:var(--purple);height:100%;width:${targetPct}%;border-radius:8px;transition:width .4s"></div>
+      </div>
+    </div>
+    `}
+
     <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-bottom:14px">
       <div class="stat-card"><div class="stat-num" style="color:var(--blue)">${myStudents.length}</div><div class="stat-lbl">مخدومين الفصل</div></div>
       <div class="stat-card"><div class="stat-num" style="color:${pctColor}">${avgPct}٪</div><div class="stat-lbl">متوسط الحضور</div></div>
@@ -1746,6 +1781,23 @@ function renderSvSummary(){
         p.style.animationDelay = (Math.random()*2.4) + 's';
         if(Math.random()>.5) p.style.borderRadius = '50%';
         card.appendChild(p);
+      }
+    }
+  }
+  // ─── رشّ قصاصات المطر على بطاقة هدف زيارات الأسبوع ───
+  if(targetReached){
+    const tcard = document.getElementById('homeTargetCard');
+    if(tcard){
+      const cols2 = ['#b87ef7','#34c97b','#7eb8f7','#f5a623','#ff6b9d'];
+      for(let i=0;i<24;i++){
+        const p = document.createElement('div');
+        p.className = 'confetti-piece';
+        p.style.right = Math.random()*100 + '%';
+        p.style.background = cols2[i % cols2.length];
+        p.style.animationDuration = (1.8 + Math.random()*1.6) + 's';
+        p.style.animationDelay = (Math.random()*2.4) + 's';
+        if(Math.random()>.5) p.style.borderRadius = '50%';
+        tcard.appendChild(p);
       }
     }
   }
