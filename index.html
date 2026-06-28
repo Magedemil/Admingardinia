@@ -1499,10 +1499,12 @@ const EXAM_VERSES = [
 function pickRandomVerse(){ return EXAM_VERSES[Math.floor(Math.random()*EXAM_VERSES.length)]; }
 function isThirdSecondaryServant(){ return gradeMatch2(SERVANT_CLASS.grade) === 'ثالثة'; }
 
-function reminderTemplate(type, name){
+function reminderTemplate(type, name, gender){
   const firstName = getFirstName(name);
   if(type==='trip'){
-    return `ازيك يا ${firstName} 😊\nتذكير بخصوص الرحلة — متنساش تكون جاهز في معادك، وكلمنا لو في أي استفسار 🙏`;
+    return genderMatch(gender)==='بنت'
+      ? `ازيك ${firstName} حبيبتي 🥰\nبنفكرك بالرحلة عايزينك معانا هتكون حلوة يلا اكدي الحجز ♥️`
+      : `ازيك ${firstName} 🥰\nبنفكرك بالرحلة عايزينك معانا هتكون حلوة يلا اكد الحجز 🙏❤️`;
   }
   if(type==='visit'){
     return `ازيك يا ${firstName} 😊\nافتقدناك في الأسرة، حابين نسمع أخبارك ونشوفك قريب بإذن ربنا 🙏`;
@@ -1530,18 +1532,16 @@ function openReminderModal(studentId){
     '<option value="custom">✏️ رسالة مخصصة</option>';
   typeSel.value = isThirdSecondaryServant() ? 'verse' : 'visit';
 
-  applyReminderTemplate(s.name);
+  applyReminderTemplate();
   document.getElementById('reminderModal').style.display = 'flex';
 }
 
-function applyReminderTemplate(nameOverride){
+function applyReminderTemplate(){
   const type = document.getElementById('remType').value;
-  let name = nameOverride;
-  if(!name){
-    const s = STUDENTS.find(x=>x.id===remStudentIdx) || DEMO.find(x=>x.id===remStudentIdx);
-    name = s ? s.name : '';
-  }
-  document.getElementById('remText').value = reminderTemplate(type, name);
+  const s = STUDENTS.find(x=>x.id===remStudentIdx) || DEMO.find(x=>x.id===remStudentIdx);
+  const name = s ? s.name : '';
+  const gender = s ? s.gender : null;
+  document.getElementById('remText').value = reminderTemplate(type, name, gender);
   document.getElementById('remRerollBtn').style.display = (type==='verse') ? 'block' : 'none';
 }
 
