@@ -106,7 +106,34 @@ select option{background:var(--card);color:var(--text)}
 html,body{overscroll-behavior:none;background-color:#0f1117!important}
 /* date input dark */
 input[type="date"]{color-scheme:dark}
+.bonus-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:550;display:flex;align-items:center;justify-content:center;padding:20px}
+.bonus-overlay-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:26px 22px;max-width:340px;width:100%;text-align:center}
+.bonus-overlay-card .emoji{font-size:2.6rem;margin-bottom:6px}
+.bonus-overlay-card h3{font-family:'Tajawal',sans-serif;font-weight:900;font-size:1.15rem;margin-bottom:6px}
+.bonus-overlay-card p{font-size:.8rem;color:var(--muted);margin-bottom:14px;line-height:1.6}
+.bonus-overlay-btn{width:100%;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;color:#fff;
+  font-family:'Cairo',sans-serif;font-size:.85rem;font-weight:800;padding:13px;border-radius:13px;cursor:pointer;margin-bottom:8px}
+.bonus-overlay-skip{width:100%;background:transparent;border:none;color:var(--muted);font-family:'Cairo',sans-serif;
+  font-size:.76rem;font-weight:700;padding:8px;cursor:pointer}
+.bonus-step{display:flex;align-items:center;gap:10px;text-align:right;margin-bottom:9px;font-size:.78rem}
+.bonus-step .num{width:22px;height:22px;border-radius:50%;background:rgba(245,166,35,.15);color:var(--accent);
+  display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.7rem;flex-shrink:0}
 </style>
+<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+<script>
+  window.OneSignalDeferred = window.OneSignalDeferred || [];
+  window._osInitStatus = 'pending';
+  OneSignalDeferred.push(async function(OneSignal) {
+    try {
+      await OneSignal.init({ appId: "a161cc5e-8963-4c29-8154-b032f60353b4" });
+      window._osInitStatus = 'success';
+      if(typeof renderNotifBell === 'function') renderNotifBell();
+    } catch(e) {
+      window._osInitStatus = 'failed: ' + (e && e.message ? e.message : String(e));
+      console.warn('OneSignal init failed:', e);
+    }
+  });
+</script>
 </head>
 <body>
 
@@ -157,13 +184,19 @@ input[type="date"]{color-scheme:dark}
     <div class="logo">🤝</div>
     <div><div class="h-title">افتقادي</div><div class="h-sub">أسرة ثانوي - جاردنيا</div></div>
   </div>
-  <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px">
-    <button onclick="goToHub()"
-      style="width:110px;box-sizing:border-box;text-align:center;
-      background:rgba(245,166,35,.1);border:1px solid rgba(245,166,35,.28);color:var(--accent);
-      font-family:'Cairo',sans-serif;font-size:.68rem;font-weight:700;padding:4px 10px;
-      border-radius:20px;cursor:pointer;white-space:nowrap">الواجهة الرئيسية ◄</button>
-    <div class="class-lbl" id="classLabel" style="width:110px;box-sizing:border-box;text-align:center">أولى ثانوي - بنات</div>
+  <div style="display:flex;align-items:center;gap:8px">
+    <button id="notifBellBtn" onclick="enableNotifications()" title="فعّل التنبيهات"
+      style="background:var(--surface);border:1px solid var(--border);color:var(--text);
+      font-size:1rem;width:36px;height:36px;border-radius:10px;cursor:pointer;flex-shrink:0;
+      display:flex;align-items:center;justify-content:center">🔕</button>
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px">
+      <button onclick="goToHub()"
+        style="width:110px;box-sizing:border-box;text-align:center;
+        background:rgba(245,166,35,.1);border:1px solid rgba(245,166,35,.28);color:var(--accent);
+        font-family:'Cairo',sans-serif;font-size:.68rem;font-weight:700;padding:4px 10px;
+        border-radius:20px;cursor:pointer;white-space:nowrap">الواجهة الرئيسية ◄</button>
+      <div class="class-lbl" id="classLabel" style="width:110px;box-sizing:border-box;text-align:center">أولى ثانوي - بنات</div>
+    </div>
   </div>
 </header>
 
@@ -1075,11 +1108,208 @@ function goToHub(){
   window.location.assign('https://attendancegardinia.vercel.app/');
 }
 
+// ══════════════ تفعيل التنبيهات (مع وسم الخادم بفصله) ══════════════
+const NOTIF_POPUP_SNOOZE_KEY = 'eftqad_notifPopupSnoozeUntil';
+
+function isIOSDevice(){
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+}
+function isStandaloneApp(){
+  return window.navigator.standalone === true ||
+    window.matchMedia('(display-mode: standalone)').matches;
+}
+function classSlug(grade, gender){
+  const g = {'الأول الثانوي':'awal','الثاني الثانوي':'tanya','الثالث الثانوي':'talta'}[grade] || 'unknown';
+  const s = (genderMatch(gender)==='بنت') ? 'banat' : 'banin';
+  return g+'_'+s;
+}
+function isNotifEnabled(){
+  try{
+    if(typeof OneSignal === 'undefined') return false;
+    const permOk = !!OneSignal.Notifications.permission;
+    const hasSub = !!(OneSignal.User && OneSignal.User.PushSubscription && OneSignal.User.PushSubscription.id);
+    return permOk && hasSub;
+  }catch(e){ return false; }
+}
+function renderNotifBell(){
+  const el = document.getElementById('notifBellBtn');
+  if(!el) return;
+  el.textContent = isNotifEnabled() ? '🔔' : '🔕';
+}
+
+async function enableNotifications(){
+  if(isIOSDevice() && !isStandaloneApp()){
+    showIOSInstallOverlay();
+    return;
+  }
+  if(typeof OneSignal === 'undefined'){
+    toast('⚠️ الإشعارات لسه بتحمّل، جرّب تاني بعد لحظة'); return;
+  }
+  if(typeof Notification !== 'undefined' && Notification.permission === 'denied'){
+    showBlockedPermissionOverlay();
+    return;
+  }
+  let granted = false;
+  try{ granted = !!OneSignal.Notifications.permission; }catch(e){}
+  if(granted){
+    toast('✅ التنبيهات شغّالة بالفعل');
+    await tagServantClass();
+    renderNotifBell();
+    return;
+  }
+  try{
+    granted = await OneSignal.Notifications.requestPermission();
+  }catch(e){ console.warn('OneSignal permission error:', e); }
+  if(!granted && typeof Notification !== 'undefined' && Notification.permission === 'granted'){
+    granted = true;
+  }
+  if(!granted){
+    toast('محتاج توافق على الإذن عشان تتفعل التنبيهات 🙏');
+    renderNotifBell();
+    return;
+  }
+
+  // ✅ تأكيد حقيقي: ننتظر اشتراك Push فعلي قبل ما نعتبرها نجحت
+  let subId = null;
+  for(let i=0; i<10; i++){
+    try{ subId = OneSignal.User.PushSubscription.id; }catch(e){}
+    if(subId) break;
+    await new Promise(r=>setTimeout(r, 500));
+  }
+  if(!subId){
+    toast('⚠️ الموافقة سجّلت بس التسجيل الفعلي اتأخر — قفّل التطبيق وافتحه تاني وجرّب');
+    renderNotifBell();
+    return;
+  }
+
+  await tagServantClass();
+  toast('🔔 تم تفعيل التنبيهات!');
+  renderNotifBell();
+}
+
+async function tagServantClass(){
+  // وسم الخادم بفصله — عشان نقدر نبعت إشعار عيد الميلاد للفصل الصحيح بس
+  if(isAminView) return; // الأمين مالوش فصل واحد محدد
+  try{
+    const slug = classSlug(SERVANT_CLASS.grade, SERVANT_CLASS.gender);
+    await OneSignal.User.addTags({ servant_class: slug });
+    console.log('[OneSignal] tagged servant_class:', slug);
+  }catch(e){ console.warn('OneSignal tag error:', e); }
+}
+
+function showBlockedPermissionOverlay(){
+  const ios = isIOSDevice();
+  const el = document.createElement('div');
+  el.className = 'bonus-overlay';
+  el.id = 'blockedPermOverlay';
+  el.innerHTML = `
+    <div class="bonus-overlay-card">
+      <div class="emoji">🔕</div>
+      <h3>الإشعارات متبلوكة عندك</h3>
+      <p>يبدو إنك رفضت الإذن قبل كده بالغلط — لازم تفعّلها يدوي من الإعدادات:</p>
+      ${ios ? `
+        <div class="bonus-step"><span class="num">1</span><span>افتح إعدادات الموبايل (Settings)</span></div>
+        <div class="bonus-step"><span class="num">2</span><span>دوّر على اسم التطبيق ده في القايمة</span></div>
+        <div class="bonus-step"><span class="num">3</span><span>فعّل Notifications</span></div>
+        <div class="bonus-step"><span class="num">4</span><span>رجع هنا ودوس الزرار تاني</span></div>
+      ` : `
+        <div class="bonus-step"><span class="num">1</span><span>دوس 🔒 جنب رابط الموقع فوق</span></div>
+        <div class="bonus-step"><span class="num">2</span><span>دوّر على Notifications وفعّلها (Allow)</span></div>
+        <div class="bonus-step"><span class="num">3</span><span>رجع هنا ودوس الزرار تاني</span></div>
+      `}
+      <button class="bonus-overlay-btn" onclick="document.getElementById('blockedPermOverlay').remove()">تمام، فهمت</button>
+    </div>`;
+  document.body.appendChild(el);
+}
+
+const IOS_STEPS_TEXT = {
+  ar: {
+    title: 'خطوة واحدة كمان!',
+    desc: 'عشان تقدر تفعّل التنبيهات، لازم تثبّت التطبيق على شاشتك الأول:',
+    steps: [
+      'دوس على ⋯ (التلات نقط) تحت في المتصفح',
+      'دوس أيقونة المشاركة 􀈂',
+      'دوّر على «إضافة إلى الشاشة الرئيسية»',
+      'دوس «إضافة» فوق على الشمال',
+      'افتح التطبيق من الأيقونة الجديدة',
+      'دوس 🔔 فوق وفعّل التنبيهات'
+    ],
+    done: 'تمام، فهمت',
+    switchTo: 'English'
+  },
+  en: {
+    title: 'One more step!',
+    desc: 'To enable notifications, you need to install the app to your Home Screen first:',
+    steps: [
+      'Tap the ⋯ (three dots) at the bottom of the browser',
+      'Tap the Share icon 􀈂',
+      'Find "Add to Home Screen"',
+      'Tap "Add" at the top left',
+      'Open the app from the new icon',
+      'Tap 🔔 at the top and enable notifications'
+    ],
+    done: 'Got it',
+    switchTo: 'عربي'
+  }
+};
+
+function showIOSInstallOverlay(lang){
+  lang = lang || 'ar';
+  const t = IOS_STEPS_TEXT[lang];
+  const dir = lang === 'en' ? 'ltr' : 'rtl';
+  const old = document.getElementById('iosInstallOverlay');
+  if(old) old.remove();
+  const el = document.createElement('div');
+  el.className = 'bonus-overlay';
+  el.id = 'iosInstallOverlay';
+  el.innerHTML = `
+    <div class="bonus-overlay-card" dir="${dir}" style="text-align:${lang==='en'?'left':'center'}">
+      <div style="text-align:center"><div class="emoji">📲</div></div>
+      <h3 style="text-align:center">${t.title}</h3>
+      <p style="text-align:center">${t.desc}</p>
+      ${t.steps.map((s,i)=>`<div class="bonus-step"><span class="num">${i+1}</span><span>${s}</span></div>`).join('')}
+      <button class="bonus-overlay-btn" onclick="document.getElementById('iosInstallOverlay').remove()">${t.done}</button>
+      <button class="bonus-overlay-skip" onclick="showIOSInstallOverlay('${lang==='en'?'ar':'en'}')">🌐 ${t.switchTo}</button>
+    </div>`;
+  document.body.appendChild(el);
+}
+
+function maybeShowNotifPopup(){
+  if(isAminView) return; // البوب-أب للخدام بس (الوسم بالفصل)
+  if(isNotifEnabled()) return;
+  const snoozeUntil = parseInt(localStorage.getItem(NOTIF_POPUP_SNOOZE_KEY) || '0', 10);
+  if(Date.now() < snoozeUntil) return;
+  if(typeof Notification !== 'undefined' && Notification.permission === 'denied') return;
+
+  const el = document.createElement('div');
+  el.className = 'bonus-overlay';
+  el.id = 'notifPopup';
+  el.innerHTML = `
+    <div class="bonus-overlay-card">
+      <div class="emoji">🎂</div>
+      <h3>متفوتش عيد ميلاد مخدوم!</h3>
+      <p>فعّل التنبيهات عشان نفكّرك أوتوماتيك في يوم عيد ميلاد أي مخدوم في فصلك 🎉</p>
+      <button class="bonus-overlay-btn" onclick="closeNotifPopup(true)">فعّل الآن</button>
+      <button class="bonus-overlay-skip" onclick="closeNotifPopup(false)">لاحقاً</button>
+    </div>`;
+  document.body.appendChild(el);
+}
+function closeNotifPopup(proceed){
+  const el = document.getElementById('notifPopup');
+  if(el) el.remove();
+  if(proceed){
+    enableNotifications();
+  } else {
+    localStorage.setItem(NOTIF_POPUP_SNOOZE_KEY, String(Date.now() + 3*24*60*60*1000));
+  }
+}
+
 async function launchApp(amin){
   isAminView = amin;
   document.getElementById('loginScreen').style.display = 'none';
   setView(amin ? 'amin' : 'servant');
   await loadAllData();
+  setTimeout(()=>{ renderNotifBell(); maybeShowNotifPopup(); }, 1200);
 }
 
 // ═══ Load everything from Supabase ═══
