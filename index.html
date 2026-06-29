@@ -472,6 +472,22 @@ input[type="date"]{color-scheme:dark}
         </div>
       </div>
       <div>
+        <button onclick="toggleAIBox()" id="aiToggleBtn" style="width:100%;background:linear-gradient(135deg,rgba(184,126,247,.15),rgba(126,184,247,.1));
+          border:1px solid rgba(184,126,247,.35);color:var(--purple);font-family:'Cairo',sans-serif;font-weight:800;
+          font-size:.8rem;padding:11px;border-radius:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px">
+          ✨ اقترح رسالة بالذكاء الاصطناعي
+        </button>
+        <div id="aiBox" style="display:none;margin-top:9px;background:rgba(184,126,247,.06);border:1px solid rgba(184,126,247,.25);border-radius:11px;padding:11px">
+          <div style="font-size:.7rem;color:var(--muted);margin-bottom:6px">تفاصيل إضافية (اختياري) — مثلاً "قابلته إمبارح وكان متضايق"</div>
+          <textarea id="aiExtraContext" rows="2" placeholder="سيبها فاضية لو مش محتاج تفاصيل زيادة"
+            style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:'Cairo',sans-serif;font-size:.78rem;padding:8px 10px;border-radius:8px;outline:none;resize:vertical;margin-bottom:8px"></textarea>
+          <button onclick="generateAIMessage()" id="aiGenerateBtn" style="width:100%;background:linear-gradient(135deg,var(--purple),#9b6fd9);
+            border:none;color:#fff;font-family:'Cairo',sans-serif;font-weight:800;font-size:.78rem;padding:10px;border-radius:9px;cursor:pointer">
+            ✨ اكتب الرسالة
+          </button>
+        </div>
+      </div>
+      <div>
         <div style="font-size:.72rem;color:var(--muted);margin-bottom:5px">نص الرسالة (تقدر تعدّله)</div>
         <textarea id="remText" rows="5"
           style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:'Cairo',sans-serif;font-size:.82rem;padding:10px 13px;border-radius:10px;outline:none;resize:vertical;line-height:1.6"></textarea>
@@ -1761,6 +1777,51 @@ function openReminderModal(studentId){
 
   applyReminderTemplate();
   document.getElementById('reminderModal').style.display = 'flex';
+}
+
+function toggleAIBox(){
+  const box = document.getElementById('aiBox');
+  box.style.display = box.style.display==='none' ? 'block' : 'none';
+}
+
+async function generateAIMessage(){
+  const s = STUDENTS.find(x=>x.id===remStudentIdx) || DEMO.find(x=>x.id===remStudentIdx);
+  if(!s){ toast('⚠️ مش لاقي بيانات المخدوم'); return; }
+  const extra = document.getElementById('aiExtraContext').value.trim();
+  const btn = document.getElementById('aiGenerateBtn');
+  const oldLabel = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = '⏳ بنكتب...';
+  try{
+    const res = await fetch('/api/ai-assist', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        name: s.name,
+        gender: s.gender,
+        grade: s.grade,
+        consec: s.consec ?? null,
+        pct: s.pct ?? null,
+        lastAtt: s.lastAtt || null,
+        lastNote: s.lastNote || null,
+        extra: extra || null
+      })
+    });
+    if(!res.ok){
+      const errData = await res.json().catch(()=>({}));
+      throw new Error(errData.error || ('HTTP '+res.status));
+    }
+    const data = await res.json();
+    if(!data.message) throw new Error('لا يوجد رد');
+    document.getElementById('remText').value = data.message;
+    toast('✨ تمت كتابة الرسالة');
+  }catch(e){
+    console.warn('AI assist error:', e);
+    toast('⚠️ حصل خطأ، جرّب تاني بعد لحظة');
+  }finally{
+    btn.disabled = false;
+    btn.textContent = oldLabel;
+  }
 }
 
 function applyReminderTemplate(){
