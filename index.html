@@ -118,6 +118,29 @@ input[type="date"]{color-scheme:dark}
 .bonus-step{display:flex;align-items:center;gap:10px;text-align:right;margin-bottom:9px;font-size:.78rem}
 .bonus-step .num{width:22px;height:22px;border-radius:50%;background:rgba(245,166,35,.15);color:var(--accent);
   display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.7rem;flex-shrink:0}
+.ai-fab{position:fixed;bottom:20px;left:20px;z-index:300;width:56px;height:56px;border-radius:50%;
+  background:linear-gradient(135deg,var(--purple),#7eb8f7);border:none;cursor:pointer;
+  box-shadow:0 4px 18px rgba(184,126,247,.5);display:flex;align-items:center;justify-content:center;
+  font-size:1.5rem;transition:transform .2s}
+.ai-fab:active{transform:scale(.92)}
+.ai-panel-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:301;display:none;align-items:flex-end;justify-content:center}
+.ai-panel{background:var(--card);border-top-left-radius:22px;border-top-right-radius:22px;width:100%;max-width:480px;
+  max-height:82vh;display:flex;flex-direction:column;animation:slideUp .25s ease}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.ai-panel-head{padding:16px 18px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.ai-msgs{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px 16px;display:flex;flex-direction:column;gap:11px;min-height:120px}
+.ai-bubble{padding:11px 14px;border-radius:14px;font-size:.82rem;line-height:1.7;max-width:90%;white-space:pre-wrap}
+.ai-bubble-user{background:linear-gradient(135deg,var(--purple),#9b6fd9);color:#fff;align-self:flex-start;border-bottom-right-radius:5px}
+.ai-bubble-ai{background:var(--surface);border:1px solid var(--border);color:var(--text);align-self:flex-end;border-bottom-left-radius:5px}
+.ai-chip{background:rgba(184,126,247,.1);border:1px solid rgba(184,126,247,.3);color:var(--purple);
+  font-family:'Cairo',sans-serif;font-size:.76rem;font-weight:700;padding:9px 13px;border-radius:11px;cursor:pointer;text-align:right;width:100%}
+.ai-chip:active{background:rgba(184,126,247,.2)}
+.ai-input-row{padding:12px 14px;border-top:1px solid var(--border);display:flex;gap:8px;flex-shrink:0;align-items:flex-end}
+.ai-input-row textarea{flex:1;background:var(--bg);border:1px solid var(--border);color:var(--text);
+  font-family:'Cairo',sans-serif;font-size:.82rem;padding:10px 13px;border-radius:12px;outline:none;resize:none;max-height:90px;line-height:1.5}
+.ai-send{background:linear-gradient(135deg,var(--purple),#7eb8f7);border:none;color:#fff;width:42px;height:42px;
+  border-radius:12px;cursor:pointer;font-size:1.1rem;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.ai-send:disabled{opacity:.5}
 </style>
 <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
 <script>
@@ -1322,7 +1345,7 @@ async function launchApp(amin){
   document.getElementById('loginScreen').style.display = 'none';
   setView(amin ? 'amin' : 'servant');
   await loadAllData();
-  setTimeout(()=>{ renderNotifBell(); maybeShowNotifPopup(); }, 1200);
+  setTimeout(()=>{ renderNotifBell(); maybeShowNotifPopup(); showAIFab(); }, 1200);
 }
 
 // ═══ Load everything from Supabase ═══
@@ -1821,6 +1844,124 @@ async function generateAIMessage(){
   }finally{
     btn.disabled = false;
     btn.textContent = oldLabel;
+  }
+}
+
+// ══════════════ المساعد الذكي العائم ══════════════
+const AI_QUICK_SERVANT = [
+  '🔍 مين محتاج افتقاد عاجل في فصلي؟',
+  '📊 لخّصلي حالة فصلي الأسبوع ده',
+  '💡 اقترح طريقة أوصل لمخدوم منقطع',
+  '✍️ اكتب رسالة تشجيع لفصلي كله',
+];
+const AI_QUICK_AMIN = [
+  '📈 اكتبلي ملخص الأسبوع للخدمة',
+  '⚠️ أنهي فصل محتاج اهتمام دلوقتي؟',
+  '🎯 مين أكتر المخدومين المعرّضين للانقطاع؟',
+  '🏆 أنهي فصل متحسّن الأسبوع ده؟',
+];
+
+function showAIFab(){
+  const fab = document.getElementById('aiFab');
+  if(fab) fab.style.display = 'flex';
+}
+
+function openAIPanel(){
+  document.getElementById('aiPanelOverlay').style.display = 'flex';
+  const msgs = document.getElementById('aiMsgs');
+  // أول فتح: رسالة ترحيب + الأسئلة الجاهزة
+  if(!msgs.dataset.greeted){
+    msgs.dataset.greeted = '1';
+    const quick = isAminView ? AI_QUICK_AMIN : AI_QUICK_SERVANT;
+    const greeting = isAminView
+      ? 'أهلاً يا أمين الخدمة 👋 اسألني أي حاجة عن الخدمة، أو اختار سؤال جاهز:'
+      : 'أهلاً 👋 اسألني أي حاجة عن فصلك، أو اختار سؤال جاهز:';
+    const chips = quick.map(q=>`<button class="ai-chip" onclick="askAI('${q.replace(/'/g,"\\'")}')">${q}</button>`).join('');
+    msgs.innerHTML = `<div class="ai-bubble ai-bubble-ai">${greeting}</div>
+      <div style="display:flex;flex-direction:column;gap:7px">${chips}</div>`;
+  }
+}
+function closeAIPanel(){
+  document.getElementById('aiPanelOverlay').style.display = 'none';
+}
+function autoGrowAI(el){
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 90) + 'px';
+}
+
+function askAIFree(){
+  const input = document.getElementById('aiFreeInput');
+  const q = input.value.trim();
+  if(!q) return;
+  input.value = '';
+  autoGrowAI(input);
+  askAI(q);
+}
+
+async function askAI(question){
+  const msgs = document.getElementById('aiMsgs');
+  // اعرض سؤال المستخدم
+  const userBubble = document.createElement('div');
+  userBubble.className = 'ai-bubble ai-bubble-user';
+  userBubble.textContent = question;
+  msgs.appendChild(userBubble);
+  // فقاعة "بيفكر..."
+  const aiBubble = document.createElement('div');
+  aiBubble.className = 'ai-bubble ai-bubble-ai';
+  aiBubble.textContent = '⏳ بيفكّر...';
+  msgs.appendChild(aiBubble);
+  msgs.scrollTop = msgs.scrollHeight;
+
+  try{
+    const res = await fetch('/api/ai-chat', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        question,
+        role: isAminView ? 'amin' : 'servant',
+        context: buildAIContext()
+      })
+    });
+    if(!res.ok){
+      const e = await res.json().catch(()=>({}));
+      throw new Error(e.error || ('HTTP '+res.status));
+    }
+    const data = await res.json();
+    aiBubble.textContent = data.message || 'مفيش رد';
+  }catch(e){
+    console.warn('AI chat error:', e);
+    aiBubble.textContent = '⚠️ حصل خطأ، جرّب تاني بعد لحظة';
+  }
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+// يبني ملخص بيانات (مش كل التفاصيل — ملخص ذكي يكفي التحليل) حسب الدور
+function buildAIContext(){
+  const summarize = (list) => list.map(s=>({
+    n: getFirstName(s.name),
+    g: s.grade, j: s.gender,
+    consec: s.consec ?? consecutiveAbsences(s.id).consec,
+    pct: s.pct ?? calcPct(s.id),
+    last: s.lastAtt || null,
+    note: s.lastNote || null
+  }));
+
+  if(isAminView){
+    // كل المخدومين، مجمّعين بالفصل
+    const all = STUDENTS.map(s=>({
+      n: s.name, g: s.grade, j: s.gender,
+      consec: consecutiveAbsences(s.id).consec,
+      pct: s.pct, last: s.lastAtt, note: s.lastNote
+    }));
+    return { scope:'الخدمة كلها', total: all.length, students: all };
+  } else {
+    const sg = gradeMatch2(SERVANT_CLASS.grade);
+    const mine = STUDENTS.filter(s => s.grade===sg && s.gender===SERVANT_CLASS.gender);
+    return {
+      scope: `فصل ${SERVANT_CLASS.grade} - ${SERVANT_CLASS.gender==='بنت'?'بنات':'بنين'}`,
+      total: mine.length,
+      students: summarize(mine)
+    };
   }
 }
 
@@ -2431,5 +2572,20 @@ async function saveEdit(){
   document.getElementById('loginScreen').style.display = 'flex';
 })();
 </script>
+<!-- ══ المساعد الذكي العائم ══ -->
+<button class="ai-fab" id="aiFab" onclick="openAIPanel()" style="display:none">✨</button>
+<div class="ai-panel-overlay" id="aiPanelOverlay" onclick="if(event.target===this)closeAIPanel()">
+  <div class="ai-panel">
+    <div class="ai-panel-head">
+      <div style="font-family:'Tajawal',sans-serif;font-weight:800;font-size:1rem">✨ المساعد الذكي</div>
+      <button onclick="closeAIPanel()" style="background:transparent;border:none;color:var(--muted);font-size:1.3rem;cursor:pointer;line-height:1">✕</button>
+    </div>
+    <div class="ai-msgs" id="aiMsgs"></div>
+    <div class="ai-input-row">
+      <textarea id="aiFreeInput" rows="1" placeholder="اكتب سؤالك..." oninput="autoGrowAI(this)" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();askAIFree()}"></textarea>
+      <button class="ai-send" id="aiSendBtn" onclick="askAIFree()">↑</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>

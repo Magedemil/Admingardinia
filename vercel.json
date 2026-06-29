@@ -5,6 +5,9 @@
     },
     "api/ai-assist.js": {
       "maxDuration": 15
+    },
+    "api/ai-chat.js": {
+      "maxDuration": 15
     }
   },
   "crons": [
