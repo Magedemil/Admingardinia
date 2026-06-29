@@ -1,5 +1,5 @@
-// api/ai-assist.js
-// وظيفة سيرفر بتستخدم Claude API لمساعدة الخادم في كتابة رسالة افتقاد مخصّصة لكل مخدوم
+// api/ai-chat.js
+// المساعد الذكي العائم — بياخد سؤال الخادم/الأمين + ملخص بيانات فصله/خدمته، ويرد بتحليل مفيد
 
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -12,37 +12,32 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const { name, gender, grade, consec, pct, lastAtt, lastNote, extra } = req.body || {};
-    if (!name) {
-      return res.status(400).json({ error: 'اسم المخدوم مطلوب' });
+    const { question, role, context } = req.body || {};
+    if (!question) {
+      return res.status(400).json({ error: 'السؤال مطلوب' });
     }
 
-    const genderWord = (gender === 'بنت') ? 'بنت' : 'ولد';
+    const roleLabel = role === 'amin' ? 'أمين خدمة (مسؤول عن كل فصول الأسرة)' : 'خادم/خادمة (مسؤول عن فصل واحد)';
 
-    // نبني وصف موجز لحالة المخدوم عشان الذكاء الاصطناعي يكتب رسالة مناسبة فعلاً
-    let statusLines = [];
-    if (consec !== null && consec !== undefined) {
-      statusLines.push(consec === 0 ? 'مواظب، مغبش عن الأسرة' : `غايب ${consec} مرة متتالية عن الأسرة`);
-    }
-    if (pct !== null && pct !== undefined) statusLines.push(`نسبة حضوره الإجمالية ${pct}٪`);
-    if (lastAtt) statusLines.push(`آخر حضور: ${lastAtt}`);
-    if (lastNote) statusLines.push(`آخر ملحوظة افتقاد مسجّلة: ${lastNote}`);
-    if (extra) statusLines.push(`معلومة إضافية من الخادم: ${extra}`);
+    const systemPrompt = `أنت مساعد ذكي داخل تطبيق "افتقادي" — تطبيق متابعة حضور وافتقاد مخدومي أسرة ثانوي في كنيسة قبطية أرثوذكسية.
+المستخدم: ${roleLabel}.
 
-    const systemPrompt = `أنت تساعد خادم/خادمة في كنيسة قبطية أرثوذكسية في كتابة رسالة واتساب قصيرة ودودة لمخدوم في أسرة ثانوي (مرحلة الثانوية العامة).
-القواعد:
-- اكتب بالعربية المصرية العامية البسيطة، بأسلوب ودود وشخصي ودافئ، مش رسمي خالص.
-- الرسالة لازم تكون قصيرة (٢-٤ جمل بحد أقصى)، مناسبة للإرسال على واتساب.
-- لو المخدوم ${genderWord==='بنت'?'بنت':'ولد'}, خاطبه/ـها بصيغة ${genderWord==='بنت'?'المؤنث':'المذكر'} الصحيحة نحوياً.
-- لا تستخدم لغة دينية ثقيلة أو وعظ مباشر — التركيز على الاهتمام الشخصي والمحبة.
-- لا تذكر أرقام أو نسب حضور بشكل مباشر في الرسالة (هي معلومات سياقية للمساعدة في الصياغة بس، مش للذكر الحرفي).
-- رجّع نص الرسالة فقط، من غير أي شرح أو علامات اقتباس أو عنوان.`;
+دورك: تساعده يفهم بيانات حضور وافتقاد مخدومينه ويتصرّف بحكمة محبة.
 
-    const userPrompt = `اسم المخدوم: ${name}
-الصف: ${grade || 'غير محدد'}
-${statusLines.length ? statusLines.join('\n') : ''}
+قواعد مهمة:
+- اكتب بالعربية المصرية العامية البسيطة، بأسلوب ودود ومحترم.
+- خليك عملي ومباشر — لو السؤال عن "مين محتاج افتقاد"، اطلّع أسماء فعلية من البيانات ورتّبها بالأولوية.
+- البيانات المرفقة فيها: اسم كل مخدوم، صفه، نوعه، عدد مرات غيابه المتتالي عن الأسرة (consec)، نسبة حضوره (pct)، آخر حضور، آخر ملحوظة افتقاد.
+- consec أعلى = غياب أطول = أولوية افتقاد أعلى. pct أقل = حضور أضعف.
+- متخترعش بيانات مش موجودة. لو معلومة مش في البيانات، قول إنها مش متوفرة.
+- ركّز على البُعد الرعوي الإنساني (المحبة والاهتمام)، مش مجرد أرقام. الافتقاد خدمة محبة مش مراقبة.
+- خلّي ردك مركّز ومناسب لقراءة سريعة على موبايل. استخدم نقاط لو فيه قائمة.
+- متستخدمش لغة دينية ثقيلة أو وعظ. كن طبيعي ودافئ.`;
 
-اكتب رسالة افتقاد قصيرة ومناسبة للحالة دي.`;
+    const userPrompt = `بيانات ${context && context.scope ? context.scope : 'المخدومين'} (${context && context.total ? context.total : 0} مخدوم):
+${JSON.stringify(context && context.students ? context.students : [], null, 1)}
+
+سؤال المستخدم: ${question}`;
 
     const aiRes = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -53,7 +48,7 @@ ${statusLines.length ? statusLines.join('\n') : ''}
       },
       body: JSON.stringify({
         model: 'claude-haiku-4-5-20251001',
-        max_tokens: 300,
+        max_tokens: 700,
         system: systemPrompt,
         messages: [{ role: 'user', content: userPrompt }],
       }),
@@ -70,12 +65,12 @@ ${statusLines.length ? statusLines.join('\n') : ''}
     const message = textBlock ? textBlock.text.trim() : null;
 
     if (!message) {
-      return res.status(502).json({ error: 'لم يتم استلام رد من الذكاء الاصطناعي' });
+      return res.status(502).json({ error: 'لم يتم استلام رد' });
     }
 
     return res.status(200).json({ message });
   } catch (err) {
-    console.error('ai-assist error:', err);
+    console.error('ai-chat error:', err);
     return res.status(500).json({ error: err.message });
   }
 };
