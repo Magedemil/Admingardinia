@@ -1151,17 +1151,13 @@ async function enableNotifications(){
   }
   let granted = false;
   try{ granted = !!OneSignal.Notifications.permission; }catch(e){}
-  if(granted){
-    toast('✅ التنبيهات شغّالة بالفعل');
-    await tagServantClass();
-    renderNotifBell();
-    return;
-  }
-  try{
-    granted = await OneSignal.Notifications.requestPermission();
-  }catch(e){ console.warn('OneSignal permission error:', e); }
-  if(!granted && typeof Notification !== 'undefined' && Notification.permission === 'granted'){
-    granted = true;
+  if(!granted){
+    try{
+      granted = await OneSignal.Notifications.requestPermission();
+    }catch(e){ console.warn('OneSignal permission error:', e); }
+    if(!granted && typeof Notification !== 'undefined' && Notification.permission === 'granted'){
+      granted = true;
+    }
   }
   if(!granted){
     toast('محتاج توافق على الإذن عشان تتفعل التنبيهات 🙏');
@@ -1169,7 +1165,8 @@ async function enableNotifications(){
     return;
   }
 
-  // ✅ تأكيد حقيقي: ننتظر اشتراك Push فعلي قبل ما نعتبرها نجحت
+  // ✅ تأكيد حقيقي: "موافقة المتصفح" مش معناها اشتراك حقيقي مسجّل عند OneSignal.
+  // ننتظر شوية ونتأكد إن فيه Push Subscription ID فعلي قبل ما نعتبرها نجحت.
   let subId = null;
   for(let i=0; i<10; i++){
     try{ subId = OneSignal.User.PushSubscription.id; }catch(e){}
@@ -2375,4 +2372,3 @@ async function saveEdit(){
 </script>
 </body>
 </html>
-
