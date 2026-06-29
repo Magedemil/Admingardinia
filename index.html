@@ -119,28 +119,54 @@ input[type="date"]{color-scheme:dark}
 .bonus-step .num{width:22px;height:22px;border-radius:50%;background:rgba(245,166,35,.15);color:var(--accent);
   display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.7rem;flex-shrink:0}
 .ai-fab{position:fixed;bottom:20px;left:20px;z-index:300;width:56px;height:56px;border-radius:50%;
-  background:linear-gradient(135deg,var(--purple),#7eb8f7);border:none;cursor:pointer;
-  box-shadow:0 4px 18px rgba(184,126,247,.5);display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;cursor:pointer;
+  box-shadow:0 4px 18px rgba(245,166,35,.45);display:flex;align-items:center;justify-content:center;
   font-size:1.5rem;transition:transform .2s}
 .ai-fab:active{transform:scale(.92)}
 .ai-panel-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:301;display:none;align-items:flex-end;justify-content:center}
-.ai-panel{background:var(--card);border-top-left-radius:22px;border-top-right-radius:22px;width:100%;max-width:480px;
-  max-height:82vh;display:flex;flex-direction:column;animation:slideUp .25s ease}
+.ai-panel{background:var(--bg);border-top-left-radius:24px;border-top-right-radius:24px;width:100%;max-width:480px;
+  height:92vh;max-height:92vh;display:flex;flex-direction:column;animation:slideUp .25s ease}
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
-.ai-panel-head{padding:16px 18px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
-.ai-msgs{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px 16px;display:flex;flex-direction:column;gap:11px;min-height:120px}
+/* ── Header: avatar + title/subtitle on the right, close on the left ── */
+.ai-panel-head{padding:18px 16px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.ai-head-right{display:flex;align-items:center;gap:12px;min-width:0}
+.ai-avatar{width:46px;height:46px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  display:flex;align-items:center;justify-content:center;font-size:1.3rem;
+  box-shadow:0 4px 14px rgba(245,166,35,.35)}
+.ai-head-text{min-width:0}
+.ai-head-title{font-family:'Tajawal',sans-serif;font-weight:800;font-size:1.05rem;color:var(--text);white-space:nowrap}
+.ai-head-sub{font-size:.72rem;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ai-close-btn{background:transparent;border:none;color:var(--muted);font-size:1.5rem;cursor:pointer;line-height:1;padding:6px;flex-shrink:0}
+/* ── Messages area ── */
+.ai-msgs{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:18px 16px;display:flex;flex-direction:column;gap:12px;min-height:120px}
+/* Welcome card shown on first open */
+.ai-welcome-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:18px 19px 20px}
+.ai-welcome-card .wc-title{font-family:'Tajawal',sans-serif;font-weight:800;font-size:1.05rem;color:var(--text);margin-bottom:8px}
+.ai-welcome-card .wc-body{font-size:.82rem;line-height:1.8;color:var(--muted)}
+.ai-welcome-card .wc-body b{color:var(--text);font-weight:800}
 .ai-bubble{padding:11px 14px;border-radius:14px;font-size:.82rem;line-height:1.7;max-width:90%;white-space:pre-wrap}
-.ai-bubble-user{background:linear-gradient(135deg,var(--purple),#9b6fd9);color:#fff;align-self:flex-start;border-bottom-right-radius:5px}
+.ai-bubble-user{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;align-self:flex-start;border-bottom-right-radius:5px}
 .ai-bubble-ai{background:var(--surface);border:1px solid var(--border);color:var(--text);align-self:flex-end;border-bottom-left-radius:5px}
-.ai-chip{background:rgba(184,126,247,.1);border:1px solid rgba(184,126,247,.3);color:var(--purple);
-  font-family:'Cairo',sans-serif;font-size:.76rem;font-weight:700;padding:9px 13px;border-radius:11px;cursor:pointer;text-align:right;width:100%}
-.ai-chip:active{background:rgba(184,126,247,.2)}
-.ai-input-row{padding:12px 14px;border-top:1px solid var(--border);display:flex;gap:8px;flex-shrink:0;align-items:flex-end}
-.ai-input-row textarea{flex:1;background:var(--bg);border:1px solid var(--border);color:var(--text);
-  font-family:'Cairo',sans-serif;font-size:.82rem;padding:10px 13px;border-radius:12px;outline:none;resize:none;max-height:90px;line-height:1.5}
-.ai-send{background:linear-gradient(135deg,var(--purple),#7eb8f7);border:none;color:#fff;width:42px;height:42px;
-  border-radius:12px;cursor:pointer;font-size:1.1rem;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+/* ── Persistent suggestion chips row, above the input ── */
+.ai-chips-row{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:0 16px 12px;flex-shrink:0}
+.ai-chips-row::-webkit-scrollbar{display:none}
+.ai-chip{background:var(--surface);border:1px solid var(--border);color:var(--text);
+  font-family:'Cairo',sans-serif;font-size:.78rem;font-weight:700;padding:10px 16px;
+  border-radius:50px;cursor:pointer;white-space:nowrap;flex-shrink:0}
+.ai-chip:active{background:rgba(245,166,35,.14);border-color:rgba(245,166,35,.4);color:var(--accent)}
+/* ── Input bar: pill input + circular send button ── */
+.ai-input-row{padding:10px 16px 4px;display:flex;gap:10px;align-items:center;flex-shrink:0}
+.ai-input-pill{flex:1;background:var(--surface);border:1.5px solid var(--border);border-radius:50px;
+  display:flex;align-items:center;padding:2px 6px 2px 16px;transition:border-color .2s,box-shadow .2s;min-width:0}
+.ai-input-pill:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px rgba(245,166,35,.18)}
+.ai-input-pill textarea{flex:1;background:transparent!important;border:none!important;color:var(--text);
+  font-family:'Cairo',sans-serif;font-size:.86rem;padding:11px 4px;outline:none;resize:none;max-height:90px;line-height:1.5;min-width:0}
+.ai-send{background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;color:#fff;width:44px;height:44px;
+  border-radius:50%;cursor:pointer;font-size:1.15rem;flex-shrink:0;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 14px rgba(245,166,35,.35)}
 .ai-send:disabled{opacity:.5}
+.ai-input-hint{text-align:center;font-size:.66rem;color:var(--muted);padding:6px 0 14px;flex-shrink:0}
 </style>
 <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
 <script>
@@ -1868,17 +1894,28 @@ function showAIFab(){
 
 function openAIPanel(){
   document.getElementById('aiPanelOverlay').style.display = 'flex';
+  // الـ subtitle بيتاخد من نفس اسم الفصل/الدور الظاهر فوق في الهيدر
+  const subEl = document.getElementById('aiHeadSub');
+  if(subEl){
+    const lblEl = document.getElementById('classLabel');
+    subEl.textContent = isAminView ? 'كل فصول الخدمة' : (lblEl ? lblEl.textContent : 'فصل الكنيسة');
+  }
   const msgs = document.getElementById('aiMsgs');
-  // أول فتح: رسالة ترحيب + الأسئلة الجاهزة
+  const chipsRow = document.getElementById('aiChipsRow');
+  // أول فتح: كارت ترحيب + الأسئلة الجاهزة (شريط ثابت فوق الإدخال)
   if(!msgs.dataset.greeted){
     msgs.dataset.greeted = '1';
+    const name = isAminView ? 'يا أمين' : (getFirstName(selectedServant) ? 'يا '+getFirstName(selectedServant) : '');
+    const scopeLabel = isAminView ? 'كل فصول الخدمة' : (subEl ? subEl.textContent : 'فصلك');
+    msgs.innerHTML = `<div class="ai-welcome-card">
+        <div class="wc-title">👋 مرحباً ${name}!</div>
+        <div class="wc-body">أنا مساعدك الذكي ${isAminView?'لـ':'لفصل'} <b>${scopeLabel}</b>. يمكنني مساعدتك في تحليل البيانات، كتابة رسائل الافتقاد، واقتراح الأنشطة.</div>
+      </div>`;
     const quick = isAminView ? AI_QUICK_AMIN : AI_QUICK_SERVANT;
-    const greeting = isAminView
-      ? 'أهلاً يا أمين الخدمة 👋 اسألني أي حاجة عن الخدمة، أو اختار سؤال جاهز:'
-      : 'أهلاً 👋 اسألني أي حاجة عن فصلك، أو اختار سؤال جاهز:';
-    const chips = quick.map(q=>`<button class="ai-chip" onclick="askAI('${q.replace(/'/g,"\\'")}')">${q}</button>`).join('');
-    msgs.innerHTML = `<div class="ai-bubble ai-bubble-ai">${greeting}</div>
-      <div style="display:flex;flex-direction:column;gap:7px">${chips}</div>`;
+    chipsRow.innerHTML = quick.map(q=>{
+      const label = q.replace(/^\S+\s*/,''); // إزالة الإيموجي من شكل الزرار بس مع إبقاء السؤال الكامل عند الإرسال
+      return `<button class="ai-chip" onclick="askAI('${q.replace(/'/g,"\\'")}')">${label}</button>`;
+    }).join('');
   }
 }
 function closeAIPanel(){
@@ -2572,19 +2609,29 @@ async function saveEdit(){
   document.getElementById('loginScreen').style.display = 'flex';
 })();
 </script>
-<!-- ══ المساعد الذكي العائم ══ -->
+<!-- ══ مساعد الخادم الذكي ══ -->
 <button class="ai-fab" id="aiFab" onclick="openAIPanel()" style="display:none">✨</button>
 <div class="ai-panel-overlay" id="aiPanelOverlay" onclick="if(event.target===this)closeAIPanel()">
   <div class="ai-panel">
     <div class="ai-panel-head">
-      <div style="font-family:'Tajawal',sans-serif;font-weight:800;font-size:1rem">✨ المساعد الذكي</div>
-      <button onclick="closeAIPanel()" style="background:transparent;border:none;color:var(--muted);font-size:1.3rem;cursor:pointer;line-height:1">✕</button>
+      <div class="ai-head-right">
+        <div class="ai-avatar">✨</div>
+        <div class="ai-head-text">
+          <div class="ai-head-title">مساعد الخادم الذكي</div>
+          <div class="ai-head-sub" id="aiHeadSub">فصل الكنيسة</div>
+        </div>
+      </div>
+      <button onclick="closeAIPanel()" class="ai-close-btn">✕</button>
     </div>
     <div class="ai-msgs" id="aiMsgs"></div>
+    <div class="ai-chips-row" id="aiChipsRow"></div>
     <div class="ai-input-row">
-      <textarea id="aiFreeInput" rows="1" placeholder="اكتب سؤالك..." oninput="autoGrowAI(this)" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();askAIFree()}"></textarea>
+      <div class="ai-input-pill">
+        <textarea id="aiFreeInput" rows="1" placeholder="اسأل عن بيانات الفصل أو اطلب مساعدة..." oninput="autoGrowAI(this)" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();askAIFree()}"></textarea>
+      </div>
       <button class="ai-send" id="aiSendBtn" onclick="askAIFree()">↑</button>
     </div>
+    <div class="ai-input-hint">Enter للإرسال · Shift+Enter لسطر جديد</div>
   </div>
 </div>
 </body>
