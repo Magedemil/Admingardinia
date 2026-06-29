@@ -119,54 +119,28 @@ input[type="date"]{color-scheme:dark}
 .bonus-step .num{width:22px;height:22px;border-radius:50%;background:rgba(245,166,35,.15);color:var(--accent);
   display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.7rem;flex-shrink:0}
 .ai-fab{position:fixed;bottom:20px;left:20px;z-index:300;width:56px;height:56px;border-radius:50%;
-  background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;cursor:pointer;
-  box-shadow:0 4px 18px rgba(245,166,35,.45);display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,var(--purple),#7eb8f7);border:none;cursor:pointer;
+  box-shadow:0 4px 18px rgba(184,126,247,.5);display:flex;align-items:center;justify-content:center;
   font-size:1.5rem;transition:transform .2s}
 .ai-fab:active{transform:scale(.92)}
 .ai-panel-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:301;display:none;align-items:flex-end;justify-content:center}
-.ai-panel{background:var(--bg);border-top-left-radius:24px;border-top-right-radius:24px;width:100%;max-width:480px;
-  height:92vh;max-height:92vh;display:flex;flex-direction:column;animation:slideUp .25s ease}
+.ai-panel{background:var(--card);border-top-left-radius:22px;border-top-right-radius:22px;width:100%;max-width:480px;
+  max-height:82vh;display:flex;flex-direction:column;animation:slideUp .25s ease}
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
-/* ── Header: avatar + title/subtitle on the right, close on the left ── */
-.ai-panel-head{padding:18px 16px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
-.ai-head-right{display:flex;align-items:center;gap:12px;min-width:0}
-.ai-avatar{width:46px;height:46px;border-radius:50%;flex-shrink:0;
-  background:linear-gradient(135deg,var(--accent),var(--accent2));
-  display:flex;align-items:center;justify-content:center;font-size:1.3rem;
-  box-shadow:0 4px 14px rgba(245,166,35,.35)}
-.ai-head-text{min-width:0}
-.ai-head-title{font-family:'Tajawal',sans-serif;font-weight:800;font-size:1.05rem;color:var(--text);white-space:nowrap}
-.ai-head-sub{font-size:.72rem;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ai-close-btn{background:transparent;border:none;color:var(--muted);font-size:1.5rem;cursor:pointer;line-height:1;padding:6px;flex-shrink:0}
-/* ── Messages area ── */
-.ai-msgs{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:18px 16px;display:flex;flex-direction:column;gap:12px;min-height:120px}
-/* Welcome card shown on first open */
-.ai-welcome-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:18px 19px 20px}
-.ai-welcome-card .wc-title{font-family:'Tajawal',sans-serif;font-weight:800;font-size:1.05rem;color:var(--text);margin-bottom:8px}
-.ai-welcome-card .wc-body{font-size:.82rem;line-height:1.8;color:var(--muted)}
-.ai-welcome-card .wc-body b{color:var(--text);font-weight:800}
+.ai-panel-head{padding:16px 18px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.ai-msgs{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px 16px;display:flex;flex-direction:column;gap:11px;min-height:120px}
 .ai-bubble{padding:11px 14px;border-radius:14px;font-size:.82rem;line-height:1.7;max-width:90%;white-space:pre-wrap}
-.ai-bubble-user{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;align-self:flex-start;border-bottom-right-radius:5px}
+.ai-bubble-user{background:linear-gradient(135deg,var(--purple),#9b6fd9);color:#fff;align-self:flex-start;border-bottom-right-radius:5px}
 .ai-bubble-ai{background:var(--surface);border:1px solid var(--border);color:var(--text);align-self:flex-end;border-bottom-left-radius:5px}
-/* ── Persistent suggestion chips row, above the input ── */
-.ai-chips-row{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:0 16px 12px;flex-shrink:0}
-.ai-chips-row::-webkit-scrollbar{display:none}
-.ai-chip{background:var(--surface);border:1px solid var(--border);color:var(--text);
-  font-family:'Cairo',sans-serif;font-size:.78rem;font-weight:700;padding:10px 16px;
-  border-radius:50px;cursor:pointer;white-space:nowrap;flex-shrink:0}
-.ai-chip:active{background:rgba(245,166,35,.14);border-color:rgba(245,166,35,.4);color:var(--accent)}
-/* ── Input bar: pill input + circular send button ── */
-.ai-input-row{padding:10px 16px 4px;display:flex;gap:10px;align-items:center;flex-shrink:0}
-.ai-input-pill{flex:1;background:var(--surface);border:1.5px solid var(--border);border-radius:50px;
-  display:flex;align-items:center;padding:2px 6px 2px 16px;transition:border-color .2s,box-shadow .2s;min-width:0}
-.ai-input-pill:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px rgba(245,166,35,.18)}
-.ai-input-pill textarea{flex:1;background:transparent!important;border:none!important;color:var(--text);
-  font-family:'Cairo',sans-serif;font-size:.86rem;padding:11px 4px;outline:none;resize:none;max-height:90px;line-height:1.5;min-width:0}
-.ai-send{background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;color:#fff;width:44px;height:44px;
-  border-radius:50%;cursor:pointer;font-size:1.15rem;flex-shrink:0;display:flex;align-items:center;justify-content:center;
-  box-shadow:0 4px 14px rgba(245,166,35,.35)}
+.ai-chip{background:rgba(184,126,247,.1);border:1px solid rgba(184,126,247,.3);color:var(--purple);
+  font-family:'Cairo',sans-serif;font-size:.76rem;font-weight:700;padding:9px 13px;border-radius:11px;cursor:pointer;text-align:right;width:100%}
+.ai-chip:active{background:rgba(184,126,247,.2)}
+.ai-input-row{padding:12px 14px;border-top:1px solid var(--border);display:flex;gap:8px;flex-shrink:0;align-items:flex-end}
+.ai-input-row textarea{flex:1;background:var(--bg);border:1px solid var(--border);color:var(--text);
+  font-family:'Cairo',sans-serif;font-size:.82rem;padding:10px 13px;border-radius:12px;outline:none;resize:none;max-height:90px;line-height:1.5}
+.ai-send{background:linear-gradient(135deg,var(--purple),#7eb8f7);border:none;color:#fff;width:42px;height:42px;
+  border-radius:12px;cursor:pointer;font-size:1.1rem;flex-shrink:0;display:flex;align-items:center;justify-content:center}
 .ai-send:disabled{opacity:.5}
-.ai-input-hint{text-align:center;font-size:.66rem;color:var(--muted);padding:6px 0 14px;flex-shrink:0}
 </style>
 <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
 <script>
@@ -432,7 +406,7 @@ input[type="date"]{color-scheme:dark}
       style="width:100%;margin-bottom:10px;display:flex;align-items:center;justify-content:center;gap:6px;
       background:linear-gradient(135deg,rgba(52,201,123,.12),rgba(52,201,123,.04));
       border:1px solid rgba(52,201,123,.3);border-radius:11px;padding:8px;cursor:pointer;
-      font-family:'Cairo',sans-serif;color:var(--green);font-size:#74rem;font-weight:700">
+      font-family:'Cairo',sans-serif;color:var(--green);font-size:.74rem;font-weight:700">
       <span style="font-size:.92rem">💾</span>
       <span id="backupBtnLabel">Backup (Excel)</span>
     </button>
@@ -493,7 +467,7 @@ input[type="date"]{color-scheme:dark}
 </div>
 
 <!-- ══ STUDENT DETAIL MODAL ══ -->
-<div id="stuModal" onclick="if(event.target===this)closeStudentCard()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(5px);z-index:400;align-items:center;justify-content:center;padding:22px">
+<div id="stuModal" onclick="if(event.target===this)closeStudentCard()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(5px);z-index:200;align-items:center;justify-content:center;padding:22px">
   <div style="background:var(--card);border:1px solid var(--border);border-radius:18px;padding:20px;width:100%;max-width:360px;max-height:85vh;overflow-y:auto;position:relative">
     <button onclick="closeStudentCard()" style="position:absolute;top:12px;left:12px;background:rgba(255,255,255,.07);border:none;color:var(--muted);width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:13px;font-weight:800">✕</button>
     <div id="stuModalBody"></div>
@@ -501,7 +475,7 @@ input[type="date"]{color-scheme:dark}
 </div>
 
 <!-- ══ REMINDER MODAL ══ -->
-<div id="reminderModal" onclick="if(event.target===this)closeReminderModal()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(5px);z-index:410;align-items:center;justify-content:center;padding:22px">
+<div id="reminderModal" onclick="if(event.target===this)closeReminderModal()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(5px);z-index:210;align-items:center;justify-content:center;padding:22px">
   <div style="background:var(--card);border:1px solid var(--border);border-radius:18px;padding:20px;width:100%;max-width:360px">
     <div style="font-family:'Tajawal',sans-serif;font-weight:800;font-size:1.02rem;margin-bottom:4px">📲 ابعت افتقاد</div>
     <div id="remTargetInfo" style="font-size:.72rem;color:var(--muted);margin-bottom:14px"></div>
@@ -561,7 +535,7 @@ input[type="date"]{color-scheme:dark}
 </div>
 
 <!-- ══ EDIT/ADD STUDENT MODAL ══ -->
-<div id="editModal" onclick="if(event.target===this)closeEditModal()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(5px);z-index:420;align-items:center;justify-content:center;padding:20px">
+<div id="editModal" onclick="if(event.target===this)closeEditModal()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(5px);z-index:300;align-items:center;justify-content:center;padding:20px">
   <div style="background:var(--card);border:1px solid var(--border);border-radius:18px;padding:20px;width:100%;max-width:360px;position:relative">
     <button onclick="closeEditModal()" style="position:absolute;top:12px;left:12px;background:rgba(255,255,255,.07);border:none;color:var(--muted);width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:13px;font-weight:800">✕</button>
     <div id="editModalTitle" style="font-weight:900;font-size:1rem;text-align:center;margin-bottom:18px;padding-right:10px">➕ إضافة مخدوم جديد</div>
@@ -904,7 +878,7 @@ async function buildServantList(){
   document.getElementById('servantNameList').innerHTML = names.map((key,i) => {
     const displayName = key; // already has م/
     const initials = key.replace('م/ ','').split(' ').slice(0,2).map(w=>w[0]).join('');
-    return `<div class="sv-row" id="svr-${i}" onclick="pickServant('${key.replace(/'/g,"'")}',${i})"
+    return `<div class="sv-row" id="svr-${i}" onclick="pickServant('${key.replace(/'/g,"\'")}',${i})"
       style="background:var(--surface);border:1.5px solid var(--border);border-radius:12px;
       padding:11px 14px;display:flex;align-items:center;gap:11px;cursor:pointer;transition:all .2s">
       <div style="width:34px;height:34px;border-radius:50%;background:${S_COLORS[i%S_COLORS.length]};
@@ -1026,7 +1000,7 @@ function renderRewardsList(){
         <button onclick="editReward(${r.id})"
           style="background:rgba(126,184,247,.1);border:1px solid rgba(126,184,247,.3);color:var(--blue);
           width:32px;height:32px;border-radius:9px;cursor:pointer;font-size:.85rem">✏️</button>
-        <button onclick="deleteReward(${r.id},'${r.name.replace(/'/g,"\'")}')"
+        <button onclick="deleteReward(${r.id},'${r.name.replace(/'/g,"\\'")}')"
           style="background:rgba(232,69,69,.1);border:1px solid rgba(232,69,69,.3);color:var(--red);
           width:32px;height:32px;border-radius:9px;cursor:pointer;font-size:.85rem">🗑️</button>
       </div>
@@ -1766,36 +1740,13 @@ function closeStudentCard(){ document.getElementById('stuModal').style.display =
 let remStudentIdx = null;
 
 function getFirstName(name){ return (name||'').trim().split(/\s+/)[0]; }
-function getTwoNames(name){ return (name||'').trim().split(/\s+/).slice(0, 2).join(' '); }
-
-function escapeHTML(str) {
-    return str.replace(/[&<>'"]/g, tag => ({
-        '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
-    }[tag]));
-}
-
-function parseAIMessage(text) {
-    let html = escapeHTML(text);
-    const sortedStudents = [...STUDENTS].map((s, idx) => ({
-        idx: idx,
-        twoName: getTwoNames(s.name)
-    })).sort((a, b) => b.twoName.length - a.twoName.length);
-
-    sortedStudents.forEach(item => {
-        if (item.twoName.trim().length > 1) { 
-            const regex = new RegExp(item.twoName, 'g');
-            html = html.replace(regex, `<b onclick="openStudentCard(${item.idx})" style="color:var(--accent); cursor:pointer; text-decoration:underline; text-underline-offset: 4px;">$&</b>`);
-        }
-    });
-    return html;
-}
 
 // ═══ بنك آيات تشجيع للامتحانات (٣ ثانوي بس) ═══
 const EXAM_VERSES = [
   { ref:'يشوع ١: ٩',      text:'تَشَدَّدْ وَتَشَجَّعْ... لأَنَّ الرَّبَّ إِلَهَكَ مَعَكَ حَيْثُمَا تَذْهَبُ' },
-  { ref:'فيلبي ٤: 13',     text:'أَسْتَطِيعُ كُلَّ شَيْءٍ فِي الْمَسِيحِ الَّذِي يُقَوِّيني' },
+  { ref:'فيلبي ٤: ١٣',     text:'أَسْتَطِيعُ كُلَّ شَيْءٍ فِي الْمَسِيحِ الَّذِي يُقَوِّيني' },
   { ref:'إشعياء ٤١: ١٠',   text:'لاَ تَخَفْ لأَنِّي مَعَكَ... هأَنَذَا أُعِينُكَ وَأَعْضُدُكَ' },
-  { ref:'مزمور ٢٣: ٤',     text:'لاَ أَخَافُ شَرّاً لأَنَّكَ مَعِي... عَصَاكَ وَعُكَّازُكَ هُمَا يُعَزِّيَانِني' },
+  { ref:'مزمور ٢٣: ٤',     text:'لاَ أَخَافُ شَرّاً لأَنَّكَ مَعِي... عَصَاكَ وَعُكَّازُكَ هُمَا يُعَزِّيَانِنِي' },
   { ref:'إرميا ٢٩: ١١',    text:'أَفْكَارَ سَلاَمٍ لاَ أَفْكَارَ شَرّ... لأُعْطِيَكُمْ آخِرَةً وَرَجَاءً' },
   { ref:'٢ تيموثاوس ١: ٧', text:'لَمْ يُعْطِنَا اللهُ رُوحَ الْفَشَلِ بَلْ رُوحَ الْقُوَّةِ وَالْمَحَبَّةِ وَالنُّصْحِ' },
   { ref:'مزمور ٤٦: ١',     text:'اللهُ لَنَا مَلْجَأٌ وَقُوَّةٌ، عَوْنٌ حَاضِرٌ فِي الضِّيقَاتِ وَجَدٌ شَدِيداً' },
@@ -1812,33 +1763,23 @@ const EXAM_VERSES = [
   { ref:'مزمور ٣٤: ٤',     text:'طَلَبْتُ إِلَى الرَّبِّ فَاسْتَجَابَ لِي، وَمِنْ كُلِّ مَخَاوِفِي نَجَّاني' },
 ];
 function pickRandomVerse(){ return EXAM_VERSES[Math.floor(Math.random()*EXAM_VERSES.length)]; }
-function isThirdSecondaryServant(){ return gradeMatch2(SERVANT_CLASS.grade) === 'ثالع'; }
+function isThirdSecondaryServant(){ return gradeMatch2(SERVANT_CLASS.grade) === 'ثالثة'; }
 
 function reminderTemplate(type, name, gender){
   const firstName = getFirstName(name);
   if(type==='trip'){
     return genderMatch(gender)==='بنت'
-      ? `ازيك ${firstName} حبيبتي 🥰
-بنفكرك بالرحلة عايزينك معانا هتكون حلوة يلا اكدي الحجز ♥️`
-      : `ازيك ${firstName} 🥰
-بنفكرك بالرحلة عايزينك معانا هتكون حلوة يلا اكد الحجز 🙏❤️`;
+      ? `ازيك ${firstName} حبيبتي 🥰\nبنفكرك بالرحلة عايزينك معانا هتكون حلوة يلا اكدي الحجز ♥️`
+      : `ازيك ${firstName} 🥰\nبنفكرك بالرحلة عايزينك معانا هتكون حلوة يلا اكد الحجز 🙏❤️`;
   }
   if(type==='visit'){
-    return `ازيك يا ${firstName} 😊
-افتقدناك في الأسرة، حابين نسمع أخبارك ونشوفك قريب بإذن ربنا 🙏`;
+    return `ازيك يا ${firstName} 😊\nافتقدناك في الأسرة، حابين نسمع أخبارك ونشوفك قريب بإذن ربنا 🙏`;
   }
   if(type==='verse'){
     const v = pickRandomVerse();
-    return `ازيك يا ${firstName} 😊
-ربنا يقوّيك ويسندك في الامتحانات 🙏
-
-"${v.text}"
-— ${v.ref}
-
-هو معاك في كل خطوة 🙏`;
+    return `ازيك يا ${firstName} 😊\nربنا يقوّيك ويسندك في الامتحانات 🙏\n\n"${v.text}"\n— ${v.ref}\n\nهو معاك في كل خطوة 🙏`;
   }
-  return `ازيك يا ${firstName} 😊
-`;
+  return `ازيك يا ${firstName} 😊\n`;
 }
 
 function openReminderModal(studentId){
@@ -1927,33 +1868,17 @@ function showAIFab(){
 
 function openAIPanel(){
   document.getElementById('aiPanelOverlay').style.display = 'flex';
-  // الـ subtitle بيتاخد من نفس اسم الفصل/الدور الظاهر فوق في الهيدر
-  const subEl = document.getElementById('aiHeadSub');
-  if(subEl){
-    const lblEl = document.getElementById('classLabel');
-    subEl.textContent = isAminView ? 'كل فصول الخدمة' : (lblEl ? lblEl.textContent : 'فصل الكنيسة');
-  }
   const msgs = document.getElementById('aiMsgs');
-  const chipsRow = document.getElementById('aiChipsRow');
-  // أول فتح: كارت ترحيب + الأسئلة الجاهزة (شريط ثابت فوق الإدخال)
+  // أول فتح: رسالة ترحيب + الأسئلة الجاهزة
   if(!msgs.dataset.greeted){
     msgs.dataset.greeted = '1';
-    let servantName = '';
-    if (selectedServant) {
-      const parts = selectedServant.replace('م/', '').trim().split(/\s+/);
-      servantName = 'م/ ' + parts[0];
-    }
-    const name = isAminView ? 'يا أمين' : servantName;
-    const scopeLabel = isAminView ? 'كل فصول الخدمة' : (subEl ? subEl.textContent : 'فصلك');
-    msgs.innerHTML = `<div class="ai-welcome-card">
-        <div class="wc-title">👋 مرحباً ${name}!</div>
-        <div class="wc-body">أنا مساعدك الذكي ${isAminView?'لـ':'لفصل'} <b>${scopeLabel}</b>. يمكنني مساعدتك في تحليل البيانات، كتابة رسائل الافتقاد، وافتراح الأنشطة.</div>
-      </div>`;
     const quick = isAminView ? AI_QUICK_AMIN : AI_QUICK_SERVANT;
-    chipsRow.innerHTML = quick.map(q=>{
-      const label = q.replace(/^\S+\s*/,''); // إزالة الإيموجي من شكل الزرار بس مع إبقاء السؤال الكامل عند الإرسال
-      return `<button class="ai-chip" onclick="askAI('${q.replace(/'/g,"\'")}')">${label}</button>`;
-    }).join('');
+    const greeting = isAminView
+      ? 'أهلاً يا أمين الخدمة 👋 اسألني أي حاجة عن الخدمة، أو اختار سؤال جاهز:'
+      : 'أهلاً 👋 اسألني أي حاجة عن فصلك، أو اختار سؤال جاهز:';
+    const chips = quick.map(q=>`<button class="ai-chip" onclick="askAI('${q.replace(/'/g,"\\'")}')">${q}</button>`).join('');
+    msgs.innerHTML = `<div class="ai-bubble ai-bubble-ai">${greeting}</div>
+      <div style="display:flex;flex-direction:column;gap:7px">${chips}</div>`;
   }
 }
 function closeAIPanel(){
@@ -2002,11 +1927,7 @@ async function askAI(question){
       throw new Error(e.error || ('HTTP '+res.status));
     }
     const data = await res.json();
-    if(data.message) {
-        aiBubble.innerHTML = parseAIMessage(data.message);
-    } else {
-        aiBubble.textContent = 'مفيش رد';
-    }
+    aiBubble.textContent = data.message || 'مفيش رد';
   }catch(e){
     console.warn('AI chat error:', e);
     aiBubble.textContent = '⚠️ حصل خطأ، جرّب تاني بعد لحظة';
@@ -2017,7 +1938,7 @@ async function askAI(question){
 // يبني ملخص بيانات (مش كل التفاصيل — ملخص ذكي يكفي التحليل) حسب الدور
 function buildAIContext(){
   const summarize = (list) => list.map(s=>({
-    n: getTwoNames(s.name),
+    n: getFirstName(s.name),
     g: s.grade, j: s.gender,
     consec: s.consec ?? consecutiveAbsences(s.id).consec,
     pct: s.pct ?? calcPct(s.id),
@@ -2028,8 +1949,7 @@ function buildAIContext(){
   if(isAminView){
     // كل المخدومين، مجمّعين بالفصل
     const all = STUDENTS.map(s=>({
-      n: getTwoNames(s.name),
-      g: s.grade, j: s.gender,
+      n: s.name, g: s.grade, j: s.gender,
       consec: consecutiveAbsences(s.id).consec,
       pct: s.pct, last: s.lastAtt, note: s.lastNote
     }));
@@ -2117,10 +2037,8 @@ function exportStudents(view){
     ? STUDENTS.filter(s => s.grade===SERVANT_CLASS.grade && s.gender===SERVANT_CLASS.gender)
     : STUDENTS;
   const header = 'الاسم,الصف,النوع,التليفون';
-  const body = rows.map(s => `${s.name},${s.grade} ثانوي,${s.gender},${s.phone||'—'}`).join('
-');
-  const csv = '﻿' + header + '
-' + body;
+  const body = rows.map(s => `${s.name},${s.grade} ثانوي,${s.gender},${s.phone||'—'}`).join('\n');
+  const csv = '\uFEFF' + header + '\n' + body;
   const blob = new Blob([csv], {type:'text/csv;charset=utf-8'});
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
@@ -2654,29 +2572,19 @@ async function saveEdit(){
   document.getElementById('loginScreen').style.display = 'flex';
 })();
 </script>
-<!-- ══ مساعد الخادم الذكي ══ -->
+<!-- ══ المساعد الذكي العائم ══ -->
 <button class="ai-fab" id="aiFab" onclick="openAIPanel()" style="display:none">✨</button>
 <div class="ai-panel-overlay" id="aiPanelOverlay" onclick="if(event.target===this)closeAIPanel()">
   <div class="ai-panel">
     <div class="ai-panel-head">
-      <div class="ai-head-right">
-        <div class="ai-avatar">✨</div>
-        <div class="ai-head-text">
-          <div class="ai-head-title">مساعد الخادم الذكي</div>
-          <div class="ai-head-sub" id="aiHeadSub">فصل الكنيسة</div>
-        </div>
-      </div>
-      <button onclick="closeAIPanel()" class="ai-close-btn">✕</button>
+      <div style="font-family:'Tajawal',sans-serif;font-weight:800;font-size:1rem">✨ المساعد الذكي</div>
+      <button onclick="closeAIPanel()" style="background:transparent;border:none;color:var(--muted);font-size:1.3rem;cursor:pointer;line-height:1">✕</button>
     </div>
     <div class="ai-msgs" id="aiMsgs"></div>
-    <div class="ai-chips-row" id="aiChipsRow"></div>
     <div class="ai-input-row">
-      <div class="ai-input-pill">
-        <textarea id="aiFreeInput" rows="1" placeholder="اسأل عن بيانات الفصل أو اطلب مساعدة..." oninput="autoGrowAI(this)" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();askAIFree()}"></textarea>
-      </div>
+      <textarea id="aiFreeInput" rows="1" placeholder="اكتب سؤالك..." oninput="autoGrowAI(this)" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();askAIFree()}"></textarea>
       <button class="ai-send" id="aiSendBtn" onclick="askAIFree()">↑</button>
     </div>
-    <div class="ai-input-hint">Enter للإرسال · Shift+Enter لسطر جديد</div>
   </div>
 </div>
 </body>
