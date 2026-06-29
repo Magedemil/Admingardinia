@@ -432,7 +432,7 @@ input[type="date"]{color-scheme:dark}
       style="width:100%;margin-bottom:10px;display:flex;align-items:center;justify-content:center;gap:6px;
       background:linear-gradient(135deg,rgba(52,201,123,.12),rgba(52,201,123,.04));
       border:1px solid rgba(52,201,123,.3);border-radius:11px;padding:8px;cursor:pointer;
-      font-family:'Cairo',sans-serif;color:var(--green);font-size:.74rem;font-weight:700">
+      font-family:'Cairo',sans-serif;color:var(--green);font-size:#74rem;font-weight:700">
       <span style="font-size:.92rem">💾</span>
       <span id="backupBtnLabel">Backup (Excel)</span>
     </button>
@@ -493,7 +493,7 @@ input[type="date"]{color-scheme:dark}
 </div>
 
 <!-- ══ STUDENT DETAIL MODAL ══ -->
-<div id="stuModal" onclick="if(event.target===this)closeStudentCard()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(5px);z-index:200;align-items:center;justify-content:center;padding:22px">
+<div id="stuModal" onclick="if(event.target===this)closeStudentCard()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(5px);z-index:400;align-items:center;justify-content:center;padding:22px">
   <div style="background:var(--card);border:1px solid var(--border);border-radius:18px;padding:20px;width:100%;max-width:360px;max-height:85vh;overflow-y:auto;position:relative">
     <button onclick="closeStudentCard()" style="position:absolute;top:12px;left:12px;background:rgba(255,255,255,.07);border:none;color:var(--muted);width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:13px;font-weight:800">✕</button>
     <div id="stuModalBody"></div>
@@ -501,7 +501,7 @@ input[type="date"]{color-scheme:dark}
 </div>
 
 <!-- ══ REMINDER MODAL ══ -->
-<div id="reminderModal" onclick="if(event.target===this)closeReminderModal()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(5px);z-index:210;align-items:center;justify-content:center;padding:22px">
+<div id="reminderModal" onclick="if(event.target===this)closeReminderModal()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(5px);z-index:410;align-items:center;justify-content:center;padding:22px">
   <div style="background:var(--card);border:1px solid var(--border);border-radius:18px;padding:20px;width:100%;max-width:360px">
     <div style="font-family:'Tajawal',sans-serif;font-weight:800;font-size:1.02rem;margin-bottom:4px">📲 ابعت افتقاد</div>
     <div id="remTargetInfo" style="font-size:.72rem;color:var(--muted);margin-bottom:14px"></div>
@@ -561,7 +561,7 @@ input[type="date"]{color-scheme:dark}
 </div>
 
 <!-- ══ EDIT/ADD STUDENT MODAL ══ -->
-<div id="editModal" onclick="if(event.target===this)closeEditModal()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(5px);z-index:300;align-items:center;justify-content:center;padding:20px">
+<div id="editModal" onclick="if(event.target===this)closeEditModal()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(5px);z-index:420;align-items:center;justify-content:center;padding:20px">
   <div style="background:var(--card);border:1px solid var(--border);border-radius:18px;padding:20px;width:100%;max-width:360px;position:relative">
     <button onclick="closeEditModal()" style="position:absolute;top:12px;left:12px;background:rgba(255,255,255,.07);border:none;color:var(--muted);width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:13px;font-weight:800">✕</button>
     <div id="editModalTitle" style="font-weight:900;font-size:1rem;text-align:center;margin-bottom:18px;padding-right:10px">➕ إضافة مخدوم جديد</div>
@@ -904,7 +904,7 @@ async function buildServantList(){
   document.getElementById('servantNameList').innerHTML = names.map((key,i) => {
     const displayName = key; // already has م/
     const initials = key.replace('م/ ','').split(' ').slice(0,2).map(w=>w[0]).join('');
-    return `<div class="sv-row" id="svr-${i}" onclick="pickServant('${key.replace(/'/g,"\'")}',${i})"
+    return `<div class="sv-row" id="svr-${i}" onclick="pickServant('${key.replace(/'/g,"'")}',${i})"
       style="background:var(--surface);border:1.5px solid var(--border);border-radius:12px;
       padding:11px 14px;display:flex;align-items:center;gap:11px;cursor:pointer;transition:all .2s">
       <div style="width:34px;height:34px;border-radius:50%;background:${S_COLORS[i%S_COLORS.length]};
@@ -1026,7 +1026,7 @@ function renderRewardsList(){
         <button onclick="editReward(${r.id})"
           style="background:rgba(126,184,247,.1);border:1px solid rgba(126,184,247,.3);color:var(--blue);
           width:32px;height:32px;border-radius:9px;cursor:pointer;font-size:.85rem">✏️</button>
-        <button onclick="deleteReward(${r.id},'${r.name.replace(/'/g,"\\'")}')"
+        <button onclick="deleteReward(${r.id},'${r.name.replace(/'/g,"\'")}')"
           style="background:rgba(232,69,69,.1);border:1px solid rgba(232,69,69,.3);color:var(--red);
           width:32px;height:32px;border-radius:9px;cursor:pointer;font-size:.85rem">🗑️</button>
       </div>
@@ -1766,13 +1766,36 @@ function closeStudentCard(){ document.getElementById('stuModal').style.display =
 let remStudentIdx = null;
 
 function getFirstName(name){ return (name||'').trim().split(/\s+/)[0]; }
+function getTwoNames(name){ return (name||'').trim().split(/\s+/).slice(0, 2).join(' '); }
+
+function escapeHTML(str) {
+    return str.replace(/[&<>'"]/g, tag => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+    }[tag]));
+}
+
+function parseAIMessage(text) {
+    let html = escapeHTML(text);
+    const sortedStudents = [...STUDENTS].map((s, idx) => ({
+        idx: idx,
+        twoName: getTwoNames(s.name)
+    })).sort((a, b) => b.twoName.length - a.twoName.length);
+
+    sortedStudents.forEach(item => {
+        if (item.twoName.trim().length > 1) { 
+            const regex = new RegExp(item.twoName, 'g');
+            html = html.replace(regex, `<b onclick="openStudentCard(${item.idx})" style="color:var(--accent); cursor:pointer; text-decoration:underline; text-underline-offset: 4px;">$&</b>`);
+        }
+    });
+    return html;
+}
 
 // ═══ بنك آيات تشجيع للامتحانات (٣ ثانوي بس) ═══
 const EXAM_VERSES = [
   { ref:'يشوع ١: ٩',      text:'تَشَدَّدْ وَتَشَجَّعْ... لأَنَّ الرَّبَّ إِلَهَكَ مَعَكَ حَيْثُمَا تَذْهَبُ' },
-  { ref:'فيلبي ٤: ١٣',     text:'أَسْتَطِيعُ كُلَّ شَيْءٍ فِي الْمَسِيحِ الَّذِي يُقَوِّيني' },
+  { ref:'فيلبي ٤: 13',     text:'أَسْتَطِيعُ كُلَّ شَيْءٍ فِي الْمَسِيحِ الَّذِي يُقَوِّيني' },
   { ref:'إشعياء ٤١: ١٠',   text:'لاَ تَخَفْ لأَنِّي مَعَكَ... هأَنَذَا أُعِينُكَ وَأَعْضُدُكَ' },
-  { ref:'مزمور ٢٣: ٤',     text:'لاَ أَخَافُ شَرّاً لأَنَّكَ مَعِي... عَصَاكَ وَعُكَّازُكَ هُمَا يُعَزِّيَانِنِي' },
+  { ref:'مزمور ٢٣: ٤',     text:'لاَ أَخَافُ شَرّاً لأَنَّكَ مَعِي... عَصَاكَ وَعُكَّازُكَ هُمَا يُعَزِّيَانِني' },
   { ref:'إرميا ٢٩: ١١',    text:'أَفْكَارَ سَلاَمٍ لاَ أَفْكَارَ شَرّ... لأُعْطِيَكُمْ آخِرَةً وَرَجَاءً' },
   { ref:'٢ تيموثاوس ١: ٧', text:'لَمْ يُعْطِنَا اللهُ رُوحَ الْفَشَلِ بَلْ رُوحَ الْقُوَّةِ وَالْمَحَبَّةِ وَالنُّصْحِ' },
   { ref:'مزمور ٤٦: ١',     text:'اللهُ لَنَا مَلْجَأٌ وَقُوَّةٌ، عَوْنٌ حَاضِرٌ فِي الضِّيقَاتِ وَجَدٌ شَدِيداً' },
@@ -1789,23 +1812,33 @@ const EXAM_VERSES = [
   { ref:'مزمور ٣٤: ٤',     text:'طَلَبْتُ إِلَى الرَّبِّ فَاسْتَجَابَ لِي، وَمِنْ كُلِّ مَخَاوِفِي نَجَّاني' },
 ];
 function pickRandomVerse(){ return EXAM_VERSES[Math.floor(Math.random()*EXAM_VERSES.length)]; }
-function isThirdSecondaryServant(){ return gradeMatch2(SERVANT_CLASS.grade) === 'ثالثة'; }
+function isThirdSecondaryServant(){ return gradeMatch2(SERVANT_CLASS.grade) === 'ثالع'; }
 
 function reminderTemplate(type, name, gender){
   const firstName = getFirstName(name);
   if(type==='trip'){
     return genderMatch(gender)==='بنت'
-      ? `ازيك ${firstName} حبيبتي 🥰\nبنفكرك بالرحلة عايزينك معانا هتكون حلوة يلا اكدي الحجز ♥️`
-      : `ازيك ${firstName} 🥰\nبنفكرك بالرحلة عايزينك معانا هتكون حلوة يلا اكد الحجز 🙏❤️`;
+      ? `ازيك ${firstName} حبيبتي 🥰
+بنفكرك بالرحلة عايزينك معانا هتكون حلوة يلا اكدي الحجز ♥️`
+      : `ازيك ${firstName} 🥰
+بنفكرك بالرحلة عايزينك معانا هتكون حلوة يلا اكد الحجز 🙏❤️`;
   }
   if(type==='visit'){
-    return `ازيك يا ${firstName} 😊\nافتقدناك في الأسرة، حابين نسمع أخبارك ونشوفك قريب بإذن ربنا 🙏`;
+    return `ازيك يا ${firstName} 😊
+افتقدناك في الأسرة، حابين نسمع أخبارك ونشوفك قريب بإذن ربنا 🙏`;
   }
   if(type==='verse'){
     const v = pickRandomVerse();
-    return `ازيك يا ${firstName} 😊\nربنا يقوّيك ويسندك في الامتحانات 🙏\n\n"${v.text}"\n— ${v.ref}\n\nهو معاك في كل خطوة 🙏`;
+    return `ازيك يا ${firstName} 😊
+ربنا يقوّيك ويسندك في الامتحانات 🙏
+
+"${v.text}"
+— ${v.ref}
+
+هو معاك في كل خطوة 🙏`;
   }
-  return `ازيك يا ${firstName} 😊\n`;
+  return `ازيك يا ${firstName} 😊
+`;
 }
 
 function openReminderModal(studentId){
@@ -1905,16 +1938,21 @@ function openAIPanel(){
   // أول فتح: كارت ترحيب + الأسئلة الجاهزة (شريط ثابت فوق الإدخال)
   if(!msgs.dataset.greeted){
     msgs.dataset.greeted = '1';
-    const name = isAminView ? 'يا أمين' : (getFirstName(selectedServant) ? 'يا '+getFirstName(selectedServant) : '');
+    let servantName = '';
+    if (selectedServant) {
+      const parts = selectedServant.replace('م/', '').trim().split(/\s+/);
+      servantName = 'م/ ' + parts[0];
+    }
+    const name = isAminView ? 'يا أمين' : servantName;
     const scopeLabel = isAminView ? 'كل فصول الخدمة' : (subEl ? subEl.textContent : 'فصلك');
     msgs.innerHTML = `<div class="ai-welcome-card">
         <div class="wc-title">👋 مرحباً ${name}!</div>
-        <div class="wc-body">أنا مساعدك الذكي ${isAminView?'لـ':'لفصل'} <b>${scopeLabel}</b>. يمكنني مساعدتك في تحليل البيانات، كتابة رسائل الافتقاد، واقتراح الأنشطة.</div>
+        <div class="wc-body">أنا مساعدك الذكي ${isAminView?'لـ':'لفصل'} <b>${scopeLabel}</b>. يمكنني مساعدتك في تحليل البيانات، كتابة رسائل الافتقاد، وافتراح الأنشطة.</div>
       </div>`;
     const quick = isAminView ? AI_QUICK_AMIN : AI_QUICK_SERVANT;
     chipsRow.innerHTML = quick.map(q=>{
       const label = q.replace(/^\S+\s*/,''); // إزالة الإيموجي من شكل الزرار بس مع إبقاء السؤال الكامل عند الإرسال
-      return `<button class="ai-chip" onclick="askAI('${q.replace(/'/g,"\\'")}')">${label}</button>`;
+      return `<button class="ai-chip" onclick="askAI('${q.replace(/'/g,"\'")}')">${label}</button>`;
     }).join('');
   }
 }
@@ -1964,7 +2002,11 @@ async function askAI(question){
       throw new Error(e.error || ('HTTP '+res.status));
     }
     const data = await res.json();
-    aiBubble.textContent = data.message || 'مفيش رد';
+    if(data.message) {
+        aiBubble.innerHTML = parseAIMessage(data.message);
+    } else {
+        aiBubble.textContent = 'مفيش رد';
+    }
   }catch(e){
     console.warn('AI chat error:', e);
     aiBubble.textContent = '⚠️ حصل خطأ، جرّب تاني بعد لحظة';
@@ -1975,7 +2017,7 @@ async function askAI(question){
 // يبني ملخص بيانات (مش كل التفاصيل — ملخص ذكي يكفي التحليل) حسب الدور
 function buildAIContext(){
   const summarize = (list) => list.map(s=>({
-    n: getFirstName(s.name),
+    n: getTwoNames(s.name),
     g: s.grade, j: s.gender,
     consec: s.consec ?? consecutiveAbsences(s.id).consec,
     pct: s.pct ?? calcPct(s.id),
@@ -1986,7 +2028,8 @@ function buildAIContext(){
   if(isAminView){
     // كل المخدومين، مجمّعين بالفصل
     const all = STUDENTS.map(s=>({
-      n: s.name, g: s.grade, j: s.gender,
+      n: getTwoNames(s.name),
+      g: s.grade, j: s.gender,
       consec: consecutiveAbsences(s.id).consec,
       pct: s.pct, last: s.lastAtt, note: s.lastNote
     }));
@@ -2074,8 +2117,10 @@ function exportStudents(view){
     ? STUDENTS.filter(s => s.grade===SERVANT_CLASS.grade && s.gender===SERVANT_CLASS.gender)
     : STUDENTS;
   const header = 'الاسم,الصف,النوع,التليفون';
-  const body = rows.map(s => `${s.name},${s.grade} ثانوي,${s.gender},${s.phone||'—'}`).join('\n');
-  const csv = '\uFEFF' + header + '\n' + body;
+  const body = rows.map(s => `${s.name},${s.grade} ثانوي,${s.gender},${s.phone||'—'}`).join('
+');
+  const csv = '﻿' + header + '
+' + body;
   const blob = new Blob([csv], {type:'text/csv;charset=utf-8'});
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
