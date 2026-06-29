@@ -1,4 +1,9 @@
 {
+  "functions": {
+    "api/birthday-check.js": {
+      "maxDuration": 15
+    }
+  },
   "crons": [
     {
       "path": "/api/birthday-check",
@@ -6,3 +11,4 @@
     }
   ]
 }
+
